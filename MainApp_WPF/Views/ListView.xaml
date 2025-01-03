@@ -22,7 +22,7 @@
         <TextBlock Grid.Row="0"  Text="{Binding Title}" />
 
         
-        <!-- Lägg till så att listan sparas och hämtas på samma ställe för både app och konsol. -->
+        <!-- Ändra så att listan sparas och hämtas på samma ställe för både app och konsol. -->
         
         <ListView Grid.Row="1" ItemsSource="{Binding Contacts}" HorizontalContentAlignment="Stretch">
             <ListView.ItemTemplate>
@@ -31,6 +31,7 @@
                         
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
@@ -44,8 +45,20 @@
                             <TextBlock Text="{Binding PhoneNumber}" FontSize="10"/>
                         </StackPanel>
 
-                        <Button Grid.Column="1" Content="&#xe74d;" FontFamily="Segoe MDL2 Assets" Command="{Binding DeleteContactCommand}" />
-                        
+                        <Button 
+                            Grid.Column="1" 
+                            Content="&#xe74d;" 
+                            FontFamily="Segoe MDL2 Assets" 
+                            Command="{Binding DataContext.DeleteContactCommand, RelativeSource={RelativeSource AncestorType=ListView}}" 
+                            CommandParameter="{Binding}" />
+
+                        <Button 
+                            Grid.Column="2" 
+                            Content="&#xe70f;" 
+                            FontFamily="Segoe MDL2 Assets" 
+                            Command="{Binding DataContext.GoToUpdateContactViewCommand, RelativeSource={RelativeSource AncestorType=ListView}}" 
+                            CommandParameter="{Binding}" />
+
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

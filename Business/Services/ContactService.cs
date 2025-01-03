@@ -34,6 +34,8 @@ public class ContactService : IContactService
         }
     } 
 
+    //Sök efter namn istället
+
     public bool FindContactById(string id)
     {
         var contact = _contacts.FirstOrDefault(x => x.Id.Substring(0, 4) == id);
@@ -78,8 +80,8 @@ public class ContactService : IContactService
                     _contacts[i].StreetAddress = form.StreetAddress;
                 }
 
-                int zipCode = form.PostalCode.ToString().Length;
-                if (phone >= 5)
+                int postalCode = form.PostalCode.ToString().Length;
+                if (postalCode >= 5)
                 {
                     _contacts[i].PostalCode = form.PostalCode;
                 }

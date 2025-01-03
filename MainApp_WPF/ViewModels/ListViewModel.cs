@@ -34,9 +34,24 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void DeleteContact()
+    private void GoToUpdateContactView()
     {
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<UpdateContactViewModel>();
+    }
 
+    [RelayCommand]
+    private void DeleteContact(Contact contact)
+    {
+        if (contact is null)
+        {
+            return;
+        }
+
+        if (_contactService.DeleteContact(contact.Id.Substring(0, 4)))
+        {
+            Contacts.Remove(contact);
+        }
     }
 
     private void LoadContacts()

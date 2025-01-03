@@ -28,6 +28,9 @@ public partial class App : Application
 
                 services.AddTransient<AddContactViewModel>();
                 services.AddTransient<AddContactView>();
+
+                services.AddTransient<UpdateContactViewModel>();
+                services.AddTransient<UpdateContactView>();
             })
             .Build();
     }
