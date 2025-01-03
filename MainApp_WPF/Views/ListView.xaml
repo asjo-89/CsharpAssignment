@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="MainApp_WPF.Views.ListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MainApp_WPF.Views"
+             xmlns:viewmodels="clr-namespace:MainApp_WPF.ViewModels"
+             xmlns:models="clr-namespace:Business.Models;assembly=Business"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ListViewModel}"
+             
+             mc:Ignorable="d" 
+             Background="White"
+             d:DesignHeight="500" d:DesignWidth="300">
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"  Text="{Binding Title}" />
+
+        
+        <!-- Lägg till så att listan sparas och hämtas på samma ställe för både app och konsol. -->
+        
+        <ListView Grid.Row="1" ItemsSource="{Binding Contacts}" HorizontalContentAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="models:Contact">
+                    <Grid>
+                        
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Vertical">
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding FirstName}" Margin="0,0,5,0" />
+                                <TextBlock Text="{Binding LastName}" />
+                            </StackPanel>
+
+                            <TextBlock Text="{Binding PhoneNumber}" FontSize="10"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="1" Content="&#xe74d;" FontFamily="Segoe MDL2 Assets" Command="{Binding DeleteContactCommand}" />
+                        
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Button Grid.Row="2" Padding="5" Content="Add new contact" Command="{Binding GoToAddContactViewCommand}" />
+        
+    </Grid>
+</UserControl>
