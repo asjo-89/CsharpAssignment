@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Add New Contact" Grid.Row="0" FontSize="24" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding Title}" Grid.Row="0" FontSize="24" FontWeight="DemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <TextBlock Text="First Name" />
@@ -45,10 +45,10 @@
             </StackPanel>
         </ScrollViewer>
 
-            <StackPanel Grid.Row="2">
-                <Button Content="Save" Margin="0 10 0 0" Padding="5" Command="{Binding SaveContactCommand}" />
-                <Button Content="Cancel" Margin="0 10 0 0" Padding="5" Command="{Binding CancelCommand}" />
-            </StackPanel>
+        <StackPanel Grid.Row="2">
+            <Button Content="Save" Margin="0 10 0 0" Padding="5" Command="{Binding SaveContactCommand}" />
+            <Button Content="Cancel" Margin="0 10 0 0" Padding="5" Command="{Binding CancelCommand}" />
+        </StackPanel>
 
     </Grid>
 </UserControl>

@@ -32,27 +32,41 @@ public class ContactService : IContactService
             Debug.WriteLine(ex.Message);
             return false;
         }
-    } 
-
-    //Sök efter namn istället
-
-    public bool FindContactById(string id)
-    {
-        var contact = _contacts.FirstOrDefault(x => x.Id.Substring(0, 4) == id);
-
-        if (contact != null)
-        {
-            return true;
-        }
-
-        return false;
     }
+
+
+    //public Contact GetContactById(string id)
+    //{
+    //    Contact? contact = _contacts.FirstOrDefault(x => x.Id.Substring(0, 4) == id);
+
+    //    if (contact != null)
+    //    {
+    //        return contact;
+    //    }
+
+    //    return null!;
+    //}
+
+    public Contact GetContactById(string id)
+    {
+        Contact? contact = _contacts.FirstOrDefault(x => x.Id == id);
+
+        if (contact == null)
+        {
+            return null!;
+        }
+        return contact;
+    }
+
+
 
     public bool UpdateContact(string id, ContactForm form)
     {
+        if (id == null || form == null) return false;
+
         for (int i = 0; i < _contacts.Count; i++)
         {
-            if (_contacts[i].Id.Substring(0, 4) == id)
+            if (_contacts[i].Id == id)
             {
                 if (!string.IsNullOrWhiteSpace(form.FirstName))
                 {
@@ -100,16 +114,16 @@ public class ContactService : IContactService
 
     public bool DeleteContact(string id)
     {
-        for (int i = 0; i < _contacts.Count; i++)
+        Contact? contact = _contacts.FirstOrDefault(x => x.Id == id);
+
+        if (contact == null)
         {
-            if (_contacts[i].Id.Substring(0, 4) == id)
-            {
-                _contacts.RemoveAt(i);
-                _fileService.AddListToFile(_contacts);
-                return true;
-            }
-        }        
-        return false;
+            return false;
+        }
+
+        _contacts.Remove(contact);
+        _fileService.AddListToFile(_contacts);
+        return true;
     }
 
     public IEnumerable<Contact> GetAll()
@@ -117,4 +131,6 @@ public class ContactService : IContactService
         var newList = _fileService.LoadListFromFile();
         return newList;
     }
+
+   
 }

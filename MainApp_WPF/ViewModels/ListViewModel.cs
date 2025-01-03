@@ -34,10 +34,12 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void GoToUpdateContactView()
+    private void GoToUpdateContactView(Contact contact)
     {
+        var viewModel = _serviceProvider.GetRequiredService<UpdateContactViewModel>();
+        viewModel.ContactId = contact.Id;
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<UpdateContactViewModel>();
+        mainViewModel.CurrentViewModel = viewModel;
     }
 
     [RelayCommand]
@@ -48,7 +50,7 @@ public partial class ListViewModel : ObservableObject
             return;
         }
 
-        if (_contactService.DeleteContact(contact.Id.Substring(0, 4)))
+        if (_contactService.DeleteContact(contact.Id))
         {
             Contacts.Remove(contact);
         }
@@ -63,6 +65,4 @@ public partial class ListViewModel : ObservableObject
             Contacts.Add(contact);
         }
     }
-
-    
 }

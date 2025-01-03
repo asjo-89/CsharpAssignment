@@ -25,7 +25,7 @@
                 </DataTemplate>
 
                 <DataTemplate DataType="{x:Type viewmodels:UpdateContactViewModel}">
-                    <views:AddContactView />
+                    <views:UpdateContactView />
                 </DataTemplate>
 
             </ContentControl.Resources>

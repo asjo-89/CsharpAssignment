@@ -48,7 +48,7 @@ namespace Business.Dialogs
             ContactForm form = new();
 
             Console.Clear();
-            var list = _contactService.GetAll();
+            List<Contact> list = _contactService.GetAll().ToList();
 
             int counter = 1;
             foreach (Contact contact in list)
@@ -65,12 +65,13 @@ namespace Business.Dialogs
                 Console.WriteLine();
             }
 
-            Console.Write("\nEnter the id of the contact you want to update: ");
-            string id = Console.ReadLine()!.Trim();
+            Console.Write("\nEnter the contact you want to update (1, 2, 3 eg): ");
+            string input = Console.ReadLine()!.Trim();
+            int.TryParse(input, out int index);
 
-            bool validId = _contactService.FindContactById(id);
+            Contact validId = _contactService.GetContactById(list[index -1].Id);
 
-            if (!validId)
+            if (validId == null)
             {
                 Console.WriteLine("No contact with that id was found.");
                 Console.ReadKey();
@@ -103,7 +104,7 @@ namespace Business.Dialogs
             Console.Write("Enter new city: ");
             form.City = Console.ReadLine()!;
 
-            var successUpdate = _contactService.UpdateContact(id, form);
+            var successUpdate = _contactService.UpdateContact(validId.Id, form);
 
             if (!successUpdate)
             {
@@ -124,7 +125,7 @@ namespace Business.Dialogs
             ContactForm form = new();
 
             Console.Clear();
-            var list = _contactService.GetAll();
+            List<Contact> list = _contactService.GetAll().ToList();
 
             int counter = 1;
             foreach (Contact contact in list)
@@ -141,19 +142,20 @@ namespace Business.Dialogs
                 Console.WriteLine();
             }
 
-            Console.Write("\nEnter the id of the contact you want to delete: ");
-            string id = Console.ReadLine()!.Trim();
+            Console.Write("\nEnter the contact you want to delete (1, 2, 3 eg): ");
+            string input = Console.ReadLine()!.Trim();
+            int.TryParse(input, out int index);
 
-            bool validId = _contactService.FindContactById(id);
+            Contact validId = _contactService.GetContactById(list[index - 1].Id);
 
-            if (!validId)
+            if (validId == null)
             {
                 Console.WriteLine("No contact with that id was found.");
                 Console.ReadKey();
                 return;
             }
             
-            var delete = _contactService.DeleteContact(id);
+            var delete = _contactService.DeleteContact(list[index - 1].Id);
             
             if (!delete)
             {
