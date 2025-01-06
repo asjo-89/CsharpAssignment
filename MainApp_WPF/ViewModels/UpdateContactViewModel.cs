@@ -41,7 +41,14 @@ public partial class UpdateContactViewModel : ObservableObject
         }
     }
 
-    partial void OnContactIdChanged(string? value)
+    [RelayCommand]
+    public void Cancel()
+    {
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ListViewModel>();
+    }
+
+    partial void OnContactIdChanged(string value)
     {
         if (!string.IsNullOrWhiteSpace(value))
         {

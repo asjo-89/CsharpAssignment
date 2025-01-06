@@ -25,14 +25,13 @@ namespace Business.Dialogs
             form.Email = Console.ReadLine()!;
 
             Console.Write("Enter phone number: ");
-            int.TryParse(Console.ReadLine(), out int value);
-            form.PhoneNumber = value;
+            form.PhoneNumber = Console.ReadLine()!;
 
             Console.Write("Enter street: ");
             form.StreetAddress = Console.ReadLine()!;
 
             Console.Write("Enter postal code: ");
-            int.TryParse(Console.ReadLine(), out value);
+            int.TryParse(Console.ReadLine(), out int value);
             form.PostalCode = value;
 
             Console.Write("Enter city: ");
@@ -91,14 +90,13 @@ namespace Business.Dialogs
             form.Email = Console.ReadLine()!;
 
             Console.Write("\nEnter new phone number: ");
-            int.TryParse (Console.ReadLine(), out int value);
-            form.PhoneNumber = value;
+            form.PhoneNumber = Console.ReadLine()!;
 
             Console.Write("\nEnter new street address: ");
             form.StreetAddress = Console.ReadLine()!;
 
             Console.Write("\nEnter new postal code: ");
-            int.TryParse(Console.ReadLine(), out value);
+            int.TryParse(Console.ReadLine(), out int value);
             form.PostalCode = value;
 
             Console.Write("Enter new city: ");
