@@ -1,7 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Style x:Key="BorderStyling" TargetType="Border">
-        <Setter Property="CornerRadius" Value="20" />
-    </Style>
+    <FontFamily x:Key="Shantell">pack://application:,,,/Resources/Fonts/#Shantell Sans Light</FontFamily>
 </ResourceDictionary>

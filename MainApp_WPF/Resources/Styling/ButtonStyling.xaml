@@ -7,6 +7,7 @@
         <Setter Property="Width" Value="30" />
         <Setter Property="Height" Value="30" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="AliceBlue" />
@@ -26,6 +27,7 @@
                         <TextBlock x:Name="ContentText" 
                             Text="{TemplateBinding Content}"
                             FontSize="{TemplateBinding FontSize}"
+                            FontFamily="{TemplateBinding FontFamily}"
                             Foreground="{TemplateBinding Foreground}"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Center" />
@@ -51,7 +53,8 @@
         <Setter Property="Background" Value="DarkGreen" />
         <Setter Property="Foreground" Value="AliceBlue" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontFamily" Value="{StaticResource Shantell}" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Width" Value="Auto" />

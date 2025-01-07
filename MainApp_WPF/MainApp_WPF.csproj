@@ -16,10 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Fonts\AguDisplay.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Fonts\Shantell.ttf">
+    <Resource Include="Resources\Fonts\Shantell.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

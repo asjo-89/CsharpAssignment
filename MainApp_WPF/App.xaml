@@ -4,14 +4,16 @@
              xmlns:local="clr-namespace:MainApp_WPF">
     
     <Application.Resources>
+
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Fonts/Fonts.xaml" />
-                <ResourceDictionary Source="Resources/Styling/ButtonStyling.xaml" />
+                <ResourceDictionary Source="Resources/Fonts/Fonts.xaml" />
                 <ResourceDictionary Source="Resources/Styling/TypoGraphyStyling.xaml" />
-                <ResourceDictionary Source="Resources/Styling/ViewStyling.xaml" />
+                <ResourceDictionary Source="Resources/Styling/ButtonStyling.xaml" />
+                <ResourceDictionary Source="Resources/Styling/FormStyling.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
+
     </Application.Resources>
 
 </Application>
