@@ -35,6 +35,7 @@ public class ContactService_Tests
         var result = _contactService.AddContact(contact1);
 
         // Assert
+        Assert.True(result);
         _fileServiceMock.Verify(fs => fs.AddListToFile(It.IsAny<List<Contact>>()), Times.Once);
         _fileServiceMock.Verify(fs => fs.AddListToFile(It.Is<List<Contact>>(list => list.Any(x => 
             x.FirstName == "Test1" && x.LastName == "Testsson1" && x.Email == "test1@domain.com" && x.PhoneNumber == "0721234567" && x.StreetAddress == "Testvägen 1" && x.PostalCode == 12345 && x.City == "Test1"))));
@@ -50,6 +51,7 @@ public class ContactService_Tests
         var result = _contactService2.AddContact(contact1);
 
         // Assert
+        Assert.False(result);
         _fileService2Mock.Verify(fs => fs.AddListToFile(It.IsAny<List<Contact>>()), Times.Never);
     }
 
@@ -58,7 +60,7 @@ public class ContactService_Tests
     {
         // Arrange
         ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "0721234567", StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
-        var list = _contactService.AddContact(contact1);
+        _contactService.AddContact(contact1);
 
         // Act
         var result = _contactService.GetAll();
@@ -70,7 +72,7 @@ public class ContactService_Tests
     }
 
     [Fact]
-    public void FindContactById_ShouldReturnContactWithCorrectId_WhenIdMatchesToIdOfAContactInList()
+    public void GetContactById_ShouldReturnContactWithCorrectData_WhenIdMatchesToIdOfAContactInList()
     {
         // Arrange
         ContactForm contact1 = new()
@@ -104,10 +106,11 @@ public class ContactService_Tests
         Contact result = _contactService.GetContactById(contact);
 
         //Assert
-        Assert.Equal(list[1].Id, contact);
-        Assert.Equal(list[1].FirstName, contact2.FirstName);
+        Assert.Equal(list[1].Id, result.Id);
+        Assert.Equal(list[1].FirstName, result.FirstName);
     }
 
+    //Separat test för att se om uppdaterad data stämmer?
     [Fact]
     public void UpdateContact_ShouldReturnTrue_WhenContactIsUpdatedInList_WithTheNewParameterData()
     {
@@ -147,17 +150,18 @@ public class ContactService_Tests
         _contactService.AddContact(contact2);
 
         var list = _contactService.GetAll().ToList();
-        var id = list[1].Id.Substring(0, 4);
+        var id = list[1].Id;
         var contact = list[1];
 
         // Act
         bool result = _contactService.UpdateContact(id, updatedContact);
 
         //Assert
-        Assert.True(result );
+        Assert.True(result);
         Assert.Equal(updatedContact.FirstName, contact.FirstName);
     }
 
+    //Gör separat test för att rätt kontakt tas bort ur listan.
     [Fact]
     public void DeleteContact_ShouldReturnTrue_WhenContactIsDeletedFromList()
     {
@@ -187,14 +191,12 @@ public class ContactService_Tests
         _contactService.AddContact(contact2);
 
         var list = _contactService.GetAll().ToList();
-        var id = list[1].Id.Substring(0, 4);
-        var contact = list[1];
+        var id = list[1].Id;
 
         // Act
         bool result = _contactService.DeleteContact(id);
 
         //Assert
-        list = _contactService.GetAll().ToList();
         Assert.True(result);
         Assert.Single(list);
         Assert.Equal(list[0].FirstName, contact1.FirstName);

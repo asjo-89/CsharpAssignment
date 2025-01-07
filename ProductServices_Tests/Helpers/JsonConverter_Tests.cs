@@ -9,14 +9,14 @@ public class JsonConverter_Tests
     public void ConvertToJson_ShouldConvertListToJson()
     {
         // Arrange
-        var contact = new Contact() { Id = "1", FirstName = "Test", LastName = "Testsson", Email = "test@domain.com", PhoneNumber = "0731234567", StreetAddress = "Testvägen 14", PostalCode = 12345, City = "TestStad" };
-        var list = new List<Contact>
-        {
+        Contact contact = new() { Id = "1", FirstName = "Test", LastName = "Testsson", Email = "test@domain.com", PhoneNumber = "0731234567", StreetAddress = "Testvägen 14", PostalCode = 12345, City = "TestStad" };
+        List<Contact> list =
+        [
             contact
-        };
+        ];
 
         // Act
-        var result = JsonListConverter.ConvertToJson(list);
+        string result = JsonListConverter.ConvertToJson(list);
 
         // Assert
         Assert.NotEmpty(result);
@@ -28,15 +28,15 @@ public class JsonConverter_Tests
     public void ConvertToList_ShouldConvertJsonToList()
     {
         // Arrange
-        var contact = new Contact() { Id = "1", FirstName = "Test", LastName = "Testsson", Email = "test@domain.com", PhoneNumber = "0731234567", StreetAddress = "Testvägen 14", PostalCode = 12345, City = "TestStad" };
-        var list = new List<Contact>
-        {
+        Contact contact = new() { Id = "1", FirstName = "Test", LastName = "Testsson", Email = "test@domain.com", PhoneNumber = "0731234567", StreetAddress = "Testvägen 14", PostalCode = 12345, City = "TestStad" };
+        List<Contact> list =
+        [
             contact
-        };
-        var json = JsonListConverter.ConvertToJson(list);
+        ];
+        string json = JsonListConverter.ConvertToJson(list);
 
         // Act
-        var result = JsonListConverter.ConvertToList(json);
+        List<Contact> result = JsonListConverter.ConvertToList(json);
 
         // Assert
         Assert.NotNull(result);

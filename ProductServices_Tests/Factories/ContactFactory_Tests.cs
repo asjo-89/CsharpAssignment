@@ -10,7 +10,7 @@ public class ContactFactory_Tests
     {
         // Arrange
         // Act
-        var result = ContactFactory.Create();
+        ContactForm result = ContactFactory.Create();
 
         // Assert
         Assert.NotNull(result);
@@ -22,7 +22,7 @@ public class ContactFactory_Tests
     public void Create_ShouldReturnNewContact()
     {
         // Arrange
-        var contact = new ContactForm()
+        ContactForm contact = new()
         {
             FirstName = "Alice",
             LastName = "Babs",
