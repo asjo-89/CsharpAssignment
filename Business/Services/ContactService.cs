@@ -34,19 +34,6 @@ public class ContactService : IContactService
         }
     }
 
-
-    //public Contact GetContactById(string id)
-    //{
-    //    Contact? contact = _contacts.FirstOrDefault(x => x.Id.Substring(0, 4) == id);
-
-    //    if (contact != null)
-    //    {
-    //        return contact;
-    //    }
-
-    //    return null!;
-    //}
-
     public Contact GetContactById(string id)
     {
         Contact? contact = _contacts.FirstOrDefault(x => x.Id == id);
@@ -57,8 +44,6 @@ public class ContactService : IContactService
         }
         return contact;
     }
-
-
 
     public bool UpdateContact(string id, ContactForm form)
     {

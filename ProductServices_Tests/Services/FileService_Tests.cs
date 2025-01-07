@@ -14,7 +14,7 @@ public class FileService_Tests
         // Arrange
         var directoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         var fileName = "List.json";
-        var fileService = new FileService(directoryPath, fileName);
+        var fileService = new FileService();
 
         var list = new List<Contact>();
 
@@ -41,13 +41,13 @@ public class FileService_Tests
         var filePath = Path.Combine(directoryPath, fileName);
         var contacts = new List<Contact>();
 
-        Contact contact = new() { Id = "1", FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = 0721234567, StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
+        Contact contact = new() { Id = "1", FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "0721234567", StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
         contacts.Add(contact);
 
         var json = JsonConvert.SerializeObject(contacts);
         File.WriteAllText(filePath, json);
 
-        var fileService = new FileService(directoryPath, fileName);
+        var fileService = new FileService();
 
         // Act
         var result = fileService.LoadListFromFile();
@@ -55,7 +55,7 @@ public class FileService_Tests
         // Assert
         Assert.NotNull(result);
         Assert.IsType<List<Contact>>(result);
-        result.Any(x => 
+        result.Any(x =>
             x.Id == contact.Id && x.FirstName == contact.FirstName && x.LastName == contact.LastName && x.Email == contact.Email && x.PhoneNumber == contact.PhoneNumber && x.StreetAddress == contact.StreetAddress && x.PostalCode == contact.PostalCode && x.City == contact.City);
     }
 }

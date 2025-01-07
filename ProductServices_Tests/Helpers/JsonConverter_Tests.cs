@@ -9,9 +9,11 @@ public class JsonConverter_Tests
     public void ConvertToJson_ShouldConvertListToJson()
     {
         // Arrange
-        var contact = new Contact() { Id = "1", FirstName = "Test", LastName = "Testsson", Email = "test@domain.com", PhoneNumber = 0731234567, StreetAddress = "Testvägen 14", PostalCode = 12345, City = "TestStad" };
-        var list = new List<Contact>();
-        list.Add(contact);
+        var contact = new Contact() { Id = "1", FirstName = "Test", LastName = "Testsson", Email = "test@domain.com", PhoneNumber = "0731234567", StreetAddress = "Testvägen 14", PostalCode = 12345, City = "TestStad" };
+        var list = new List<Contact>
+        {
+            contact
+        };
 
         // Act
         var result = JsonListConverter.ConvertToJson(list);
@@ -26,9 +28,11 @@ public class JsonConverter_Tests
     public void ConvertToList_ShouldConvertJsonToList()
     {
         // Arrange
-        var contact = new Contact() { Id = "1", FirstName = "Test", LastName = "Testsson", Email = "test@domain.com", PhoneNumber = 0731234567, StreetAddress = "Testvägen 14", PostalCode = 12345, City = "TestStad" };
-        var list = new List<Contact>();
-        list.Add(contact);
+        var contact = new Contact() { Id = "1", FirstName = "Test", LastName = "Testsson", Email = "test@domain.com", PhoneNumber = "0731234567", StreetAddress = "Testvägen 14", PostalCode = 12345, City = "TestStad" };
+        var list = new List<Contact>
+        {
+            contact
+        };
         var json = JsonListConverter.ConvertToJson(list);
 
         // Act

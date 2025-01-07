@@ -2,8 +2,10 @@
 using Business.Interfaces;
 using Business.Models;
 using Business.Services;
+using System;
+using System.Diagnostics;
 
-namespace Business.Dialogs
+namespace MainApp_Console.Dialogs
 {
     public class MenuOptions(IContactService contactService)
     {
@@ -30,9 +32,21 @@ namespace Business.Dialogs
             Console.Write("Enter street: ");
             form.StreetAddress = Console.ReadLine()!;
 
-            Console.Write("Enter postal code: ");
-            int.TryParse(Console.ReadLine(), out int value);
-            form.PostalCode = value;
+            bool valid = true;
+            while (valid)
+            {
+                Console.Write("Enter postal code: ");
+                bool parsed = int.TryParse(Console.ReadLine(), out int value);
+                if (parsed)
+                {
+                    form.PostalCode = value;
+                    valid = false;
+                }
+                else
+                {
+                    Console.WriteLine("Enter only digits.");
+                }
+            } 
 
             Console.Write("Enter city: ");
             form.City = Console.ReadLine()!;
@@ -56,7 +70,7 @@ namespace Business.Dialogs
                 Console.WriteLine($"Contact {counter++}:");
                 Console.ForegroundColor = ConsoleColor.Gray;
 
-                Console.WriteLine($"Id: {contact.Id.Substring(0, 4)}");
+                Console.WriteLine($"Id: {contact.Id[..4]}");
                 Console.WriteLine($"Name: {contact.FirstName} {contact.LastName}");
                 Console.WriteLine($"Email: {contact.Email}");
                 Console.WriteLine($"Phone number: {contact.PhoneNumber}");
@@ -64,64 +78,83 @@ namespace Business.Dialogs
                 Console.WriteLine();
             }
 
-            Console.Write("\nEnter the contact you want to update (1, 2, 3 eg): ");
-            string input = Console.ReadLine()!.Trim();
-            int.TryParse(input, out int index);
-
-            Contact validId = _contactService.GetContactById(list[index -1].Id);
-
-            if (validId == null)
+            bool valid = true;
+            while (valid)
             {
-                Console.WriteLine("No contact with that id was found.");
-                Console.ReadKey();
-                return;
-            }
+                Console.Write("\nEnter the contact you want to update (1, 2, 3 eg): ");
+                bool parsed = int.TryParse(Console.ReadLine(), out int index);
+                if (parsed && index <= list.Count && index >= 1)
+                {
+                    Contact validId = _contactService.GetContactById(list[index - 1].Id);
 
-            Console.Clear();
-            Console.WriteLine("\nIf there is a field you don't want to change just leave it empty.\n");
+                    if (validId == null)
+                    {
+                        Console.WriteLine("No contact with that id was found.");
+                        Console.ReadKey();
+                        return;
+                    }
 
-            Console.Write("Enter new first name: ");
-            form.FirstName = Console.ReadLine()!;
+                    Console.Clear();
+                    Console.WriteLine("\nIf there is a field you don't want to change just leave it empty.\n");
 
-            Console.Write("\nEnter new last name: ");
-            form.LastName = Console.ReadLine()!;
+                    Console.Write("Enter new first name: ");
+                    form.FirstName = Console.ReadLine()!;
 
-            Console.Write("\nEnter new email: ");
-            form.Email = Console.ReadLine()!;
+                    Console.Write("\nEnter new last name: ");
+                    form.LastName = Console.ReadLine()!;
 
-            Console.Write("\nEnter new phone number: ");
-            form.PhoneNumber = Console.ReadLine()!;
+                    Console.Write("\nEnter new email: ");
+                    form.Email = Console.ReadLine()!;
 
-            Console.Write("\nEnter new street address: ");
-            form.StreetAddress = Console.ReadLine()!;
+                    Console.Write("\nEnter new phone number: ");
+                    form.PhoneNumber = Console.ReadLine()!;
 
-            Console.Write("\nEnter new postal code: ");
-            int.TryParse(Console.ReadLine(), out int value);
-            form.PostalCode = value;
+                    Console.Write("\nEnter new street address: ");
+                    form.StreetAddress = Console.ReadLine()!;
 
-            Console.Write("Enter new city: ");
-            form.City = Console.ReadLine()!;
+                    while (valid)
+                    {
+                        Console.Write("\nEnter new postal code: ");
+                        parsed = int.TryParse(Console.ReadLine(), out int value);
+                        if (parsed)
+                        {
+                            form.PostalCode = value;
+                            valid = false;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Enter only digits.");
+                        }
+                    }
 
-            var successUpdate = _contactService.UpdateContact(validId.Id, form);
+                    Console.Write("Enter new city: ");
+                    form.City = Console.ReadLine()!;
 
-            if (!successUpdate)
-            {
-                Console.Clear();
-                Console.WriteLine("Something went wrong when updating the contact. Try again later.");
-                Console.ReadKey();
-                return;
-            }
+                    var successUpdate = _contactService.UpdateContact(validId.Id, form);
+
+                    if (!successUpdate)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Something went wrong when updating the contact. Try again later.");
+                        Console.ReadKey();
+                        return;
+                    }
+
+                    valid = false;
+                }
+                else
+                {
+                    Console.WriteLine("Enter a digit based on the contact placement in the list.");
+                }
+            }            
 
             Console.Clear();
             Console.WriteLine("The contact was successfully updated.");
-
             Console.ReadKey();
         }
 
         public void DeleteContact()
         {
-            ContactForm form = new();
-
             Console.Clear();
             List<Contact> list = _contactService.GetAll().ToList();
 
@@ -132,7 +165,7 @@ namespace Business.Dialogs
                 Console.WriteLine($"Contact {counter++}:");
                 Console.ForegroundColor = ConsoleColor.Gray;
 
-                Console.WriteLine($"Id: {contact.Id.Substring(0, 4)}");
+                Console.WriteLine($"Id: {contact.Id[..4]}");
                 Console.WriteLine($"Name: {contact.FirstName} {contact.LastName}");
                 Console.WriteLine($"Email: {contact.Email}");
                 Console.WriteLine($"Phone number: {contact.PhoneNumber}");
@@ -140,30 +173,40 @@ namespace Business.Dialogs
                 Console.WriteLine();
             }
 
-            Console.Write("\nEnter the contact you want to delete (1, 2, 3 eg): ");
-            string input = Console.ReadLine()!.Trim();
-            int.TryParse(input, out int index);
-
-            Contact validId = _contactService.GetContactById(list[index - 1].Id);
-
-            if (validId == null)
+            bool valid = true;
+            while (valid)
             {
-                Console.WriteLine("No contact with that id was found.");
-                Console.ReadKey();
-                return;
-            }
-            
-            var delete = _contactService.DeleteContact(list[index - 1].Id);
-            
-            if (!delete)
-            {
-                Console.WriteLine("No contact with that id was found.");
-                Console.ReadKey();
-                return;
-            }
+                Console.Write("\nEnter the contact you want to delete (1, 2, 3 eg): ");
+                bool parsed = int.TryParse(Console.ReadLine(), out int index);
+                if (parsed)
+                {
+                    Contact validId = _contactService.GetContactById(list[index - 1].Id);
 
-            Console.WriteLine("The contact was successfully deleted.");
-            Console.ReadKey();
+                    if (validId == null)
+                    {
+                        Console.WriteLine("No contact with that id was found.");
+                        Console.ReadKey();
+                        return;
+                    }
+                    var delete = _contactService.DeleteContact(list[index - 1].Id);
+
+                    if (!delete)
+                    {
+                        Console.WriteLine("No contact with that id was found.");
+                        Console.ReadKey();
+                        return;
+                    }
+
+                    Console.WriteLine("The contact was successfully deleted.");
+                    Console.ReadKey();
+                    
+                    valid = false;
+                }
+                else
+                {
+                    Console.WriteLine("Enter only digits.");
+                }
+            }
         }
 
         public void ShowAllContacts()
@@ -176,9 +219,9 @@ namespace Business.Dialogs
             {
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"Contact {counter++}:");
-                Console.ForegroundColor= ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Gray;
 
-                Console.WriteLine($"Id: {contact.Id.Substring(0, 4)}");
+                Console.WriteLine($"Id: {contact.Id[..4]}");
                 Console.WriteLine($"Name: {contact.FirstName} {contact.LastName}");
                 Console.WriteLine($"Email: {contact.Email}");
                 Console.WriteLine($"Phone number: {contact.PhoneNumber}");

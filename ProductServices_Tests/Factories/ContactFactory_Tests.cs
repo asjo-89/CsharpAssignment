@@ -27,7 +27,7 @@ public class ContactFactory_Tests
             FirstName = "Alice",
             LastName = "Babs",
             Email = "alice@domain.com",
-            PhoneNumber = 0712345678,
+            PhoneNumber = "0712345678",
             StreetAddress = "Gata 1",
             PostalCode = 12345,
             City = "Stockholm"

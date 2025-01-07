@@ -16,7 +16,7 @@ public class ContactService_Tests
     public ContactService_Tests()
     {
         _fileServiceMock = new Mock<IFileService>();
-        _fileServiceMock.Setup(fs => fs.LoadListFromFile()).Returns(new List<Contact>());
+        _fileServiceMock.Setup(fs => fs.LoadListFromFile()).Returns([]);
         _fileServiceMock.Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>())).Returns(true);
         _contactService = new ContactService(_fileServiceMock.Object);
 
@@ -29,7 +29,7 @@ public class ContactService_Tests
     public void AddContact_ShouldReturnTrue_WhenContactIsAddedSuccessfully()
     {
         // Arrange
-        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = 0721234567, StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
+        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "0721234567", StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
 
         // Act
         var result = _contactService.AddContact(contact1);
@@ -37,29 +37,27 @@ public class ContactService_Tests
         // Assert
         _fileServiceMock.Verify(fs => fs.AddListToFile(It.IsAny<List<Contact>>()), Times.Once);
         _fileServiceMock.Verify(fs => fs.AddListToFile(It.Is<List<Contact>>(list => list.Any(x => 
-            x.FirstName == "Test1" && x.LastName == "Testsson1" && x.Email == "test1@domain.com" && x.PhoneNumber == 0721234567 && x.StreetAddress == "Testvägen 1" && x.PostalCode == 12345 && x.City == "Test1"))));
-        //Assert.True(result);
+            x.FirstName == "Test1" && x.LastName == "Testsson1" && x.Email == "test1@domain.com" && x.PhoneNumber == "0721234567" && x.StreetAddress == "Testvägen 1" && x.PostalCode == 12345 && x.City == "Test1"))));
     }
 
     [Fact]
     public void AddContact_ShouldReturnFalse_WhenThereIsNoList()
     {
         // Arrange
-        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = 0721234567, StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
+        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "0721234567", StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
 
         // Act
         var result = _contactService2.AddContact(contact1);
 
         // Assert
         _fileService2Mock.Verify(fs => fs.AddListToFile(It.IsAny<List<Contact>>()), Times.Never);
-        //Assert.False(result);
     }
 
     [Fact]
     public void GetAll_ShouldReturnIEnumerableList()
     {
         // Arrange
-        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = 0721234567, StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
+        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "0721234567", StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
         var list = _contactService.AddContact(contact1);
 
         // Act
@@ -72,7 +70,7 @@ public class ContactService_Tests
     }
 
     [Fact]
-    public void FindContactById_ShouldReturnTrue_WhenIdMatchesToIdOfAContactInList()
+    public void FindContactById_ShouldReturnContactWithCorrectId_WhenIdMatchesToIdOfAContactInList()
     {
         // Arrange
         ContactForm contact1 = new()
@@ -80,7 +78,7 @@ public class ContactService_Tests
             FirstName = "Test1", 
             LastName = "Testsson1", 
             Email = "test1@domain.com", 
-            PhoneNumber = 1111111111, 
+            PhoneNumber = "1111111111", 
             StreetAddress = "Testvägen 1", 
             PostalCode = 11111, 
             City = "Teststad"
@@ -90,7 +88,7 @@ public class ContactService_Tests
             FirstName = "Test2",
             LastName = "Testsson2",
             Email = "test2@domain.com",
-            PhoneNumber = 2111111111,
+            PhoneNumber = "2111111111",
             StreetAddress = "Testvägen 2",
             PostalCode = 22222,
             City = "Teststad"
@@ -100,13 +98,13 @@ public class ContactService_Tests
         _contactService.AddContact(contact2);
 
         var list = _contactService.GetAll().ToList();
-        var contact = list[1].Id.Substring(0, 4);
+        var contact = list[1].Id;
 
         // Act
-        bool result = _contactService.FindContactById(contact);
+        Contact result = _contactService.GetContactById(contact);
 
         //Assert
-        Assert.True(result);
+        Assert.Equal(list[1].Id, contact);
         Assert.Equal(list[1].FirstName, contact2.FirstName);
     }
 
@@ -119,7 +117,7 @@ public class ContactService_Tests
             FirstName = "Test1",
             LastName = "Testsson1",
             Email = "test1@domain.com",
-            PhoneNumber = 1111111111,
+            PhoneNumber = "1111111111",
             StreetAddress = "Testvägen 1",
             PostalCode = 11111,
             City = "Teststad"
@@ -129,7 +127,7 @@ public class ContactService_Tests
             FirstName = "Test2",
             LastName = "Testsson2",
             Email = "test2@domain.com",
-            PhoneNumber = 2111111111,
+            PhoneNumber = "2111111111",
             StreetAddress = "Testvägen 2",
             PostalCode = 22222,
             City = "Teststad"
@@ -139,7 +137,7 @@ public class ContactService_Tests
             FirstName = "Testing",
             LastName = "Testing",
             Email = "",
-            PhoneNumber = 0,
+            PhoneNumber = "0",
             StreetAddress = "Testvägen 2",
             PostalCode = 22222,
             City = "Teststad"
@@ -169,7 +167,7 @@ public class ContactService_Tests
             FirstName = "Test1",
             LastName = "Testsson1",
             Email = "test1@domain.com",
-            PhoneNumber = 1111111111,
+            PhoneNumber = "1111111111",
             StreetAddress = "Testvägen 1",
             PostalCode = 11111,
             City = "Teststad"
@@ -179,7 +177,7 @@ public class ContactService_Tests
             FirstName = "Test2",
             LastName = "Testsson2",
             Email = "test2@domain.com",
-            PhoneNumber = 2111111111,
+            PhoneNumber = "2111111111",
             StreetAddress = "Testvägen 2",
             PostalCode = 22222,
             City = "Teststad"

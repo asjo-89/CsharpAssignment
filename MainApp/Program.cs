@@ -1,5 +1,5 @@
 ﻿
-using Business.Dialogs;
+using MainApp_Console.Dialogs;
 using Business.Interfaces;
 using Business.Services;
 using Microsoft.Extensions.DependencyInjection;

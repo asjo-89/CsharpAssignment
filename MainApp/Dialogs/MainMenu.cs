@@ -2,20 +2,11 @@
 using Business.Models;
 using Business.Services;
 
-namespace Business.Dialogs;
+namespace MainApp_Console.Dialogs;
 
-public class MainMenu
+public class MainMenu(IContactService contactService)
 {
-    private readonly IContactService _contactService;
-    private readonly IFileService _fileService;
-    private readonly MenuOptions _menuOptions;
-
-    public MainMenu(IContactService contactService, IFileService fileservice)
-    {
-        _contactService = contactService;
-        _fileService = fileservice;
-        _menuOptions = new MenuOptions(contactService);
-    }
+    private readonly MenuOptions _menuOptions = new(contactService);
 
     public void Menu()
     {
