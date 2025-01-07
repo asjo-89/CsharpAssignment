@@ -5,15 +5,13 @@ using Business.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-string directoryPath = "C:\\WIN24\\VS_Code\\cSharp\\Inlämningar\\CsharpAssignment\\MainApp\\bin\\Debug\\net9.0\\Lists";
-string fileName = "ContactList.json";
 
 var host = Host.CreateDefaultBuilder()
     .ConfigureServices((context, services) =>
     {
         services.AddSingleton<IContactService, ContactService>();
         services.AddSingleton<ContactService>();
-        services.AddSingleton<IFileService>(provider => new FileService(directoryPath, fileName));
+        services.AddSingleton<IFileService, FileService>();
         services.AddSingleton<MainMenu>();
     })
     .UseDefaultServiceProvider(options =>

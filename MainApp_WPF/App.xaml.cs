@@ -17,7 +17,7 @@ public partial class App : Application
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddSingleton<IFileService>(new FileService(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Lists"), "ContactList.json"));
+                services.AddSingleton<IFileService, FileService>();
                 services.AddTransient<IContactService, ContactService>();
 
                 services.AddSingleton<MainViewModel>();

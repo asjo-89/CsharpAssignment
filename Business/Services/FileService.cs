@@ -12,10 +12,11 @@ public class FileService : IFileService
     private readonly string _filePath;
 
 
-    public FileService(string directoryPath, string fileName)
+    public FileService()
     {
-        _directoryPath = directoryPath;
-        _filePath = Path.Combine(_directoryPath, fileName);
+        _directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists");
+        _filePath = Path.Combine(_directoryPath, "ContactsList.json");
+
         if (!Directory.Exists(_directoryPath))
         {
             Directory.CreateDirectory(_directoryPath);
