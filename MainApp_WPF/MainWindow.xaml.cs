@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 namespace MainApp_WPF
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public MainWindow(MainViewModel viewModel)
         {

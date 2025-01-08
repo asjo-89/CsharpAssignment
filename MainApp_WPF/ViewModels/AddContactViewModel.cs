@@ -7,30 +7,22 @@ using System.Diagnostics;
 
 namespace MainApp_WPF.ViewModels;
 
-public partial class AddContactViewModel : ObservableObject
+public partial class AddContactViewModel(IServiceProvider serviceProvider, IContactService contactService)
+    : ObservableObject
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IContactService _contactService;
-
-    public AddContactViewModel(IServiceProvider serviceProvider, IContactService contactService)
-    {
-        _serviceProvider = serviceProvider;
-        _contactService = contactService;
-    }
+    [ObservableProperty]
+    private string _title = "Add New Contact";
 
     [ObservableProperty]
-    public string _title = "Add New Contact";
-
-    [ObservableProperty]
-    public ContactForm contact = new();
+    private ContactForm _contact = new();
 
     [RelayCommand]
-    public void SaveContact()
+    private void SaveContact()
     {
-        if (_contactService.AddContact(Contact))
+        if (contactService.AddContact(Contact))
         {
-            var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-            mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ListViewModel>();
+            var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
+            mainViewModel.CurrentViewModel = serviceProvider.GetRequiredService<ListViewModel>();
         }
         else
         {
@@ -39,9 +31,9 @@ public partial class AddContactViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void Cancel()
+    private void Cancel()
     {
-        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ListViewModel>();
+        var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = serviceProvider.GetRequiredService<ListViewModel>();
     }
 }

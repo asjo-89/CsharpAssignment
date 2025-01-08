@@ -7,33 +7,25 @@ using System.Diagnostics;
 
 namespace MainApp_WPF.ViewModels;
 
-public partial class UpdateContactViewModel : ObservableObject
+public partial class UpdateContactViewModel(IServiceProvider serviceProvider, IContactService contactService)
+    : ObservableObject
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IContactService _contactService;
-
-    public UpdateContactViewModel(IServiceProvider serviceProvider, IContactService contactService)
-    {
-        _serviceProvider = serviceProvider;
-        _contactService = contactService;
-    }
+    [ObservableProperty]
+    private string _contactId = null!;
 
     [ObservableProperty]
-    private string _contactId;
+    private string _title = "Update Contact";
 
-    [ObservableProperty]
-    public string _title = "Update Contact";
-
-    [ObservableProperty]
-    public ContactForm contact = new();
+    [ObservableProperty] 
+    private ContactForm _contact = new();
 
     [RelayCommand]
-    public void SaveUpdatedContact()
+    private void SaveUpdatedContact()
     {
-        if (_contactService.UpdateContact(ContactId, Contact)) 
+        if (contactService.UpdateContact(ContactId, Contact)) 
         {
-            var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-            mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ListViewModel>();
+            var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
+            mainViewModel.CurrentViewModel = serviceProvider.GetRequiredService<ListViewModel>();
         }
         else
         {
@@ -42,10 +34,10 @@ public partial class UpdateContactViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void Cancel()
+    private void Cancel()
     {
-        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<ListViewModel>();
+        var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = serviceProvider.GetRequiredService<ListViewModel>();
     }
 
     partial void OnContactIdChanged(string value)
@@ -56,9 +48,9 @@ public partial class UpdateContactViewModel : ObservableObject
         }
     }
 
-    public void LoadContactToUpdate(string id)
+    private void LoadContactToUpdate(string id)
     {
-        Contact contactToUpdate = _contactService.GetContactById(id);
+        Contact? contactToUpdate = contactService.GetContactById(id);
 
         if (contactToUpdate != null)
         {
@@ -70,7 +62,7 @@ public partial class UpdateContactViewModel : ObservableObject
                 PhoneNumber = contactToUpdate.PhoneNumber,
                 StreetAddress = contactToUpdate.StreetAddress,
                 PostalCode = contactToUpdate.PostalCode,
-                City = contactToUpdate.City,
+                City = contactToUpdate.City
             };
         }
     }

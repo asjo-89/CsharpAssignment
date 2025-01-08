@@ -1,4 +1,5 @@
 ﻿
+using Business.Converters;
 using MainApp_Console.Dialogs;
 using Business.Interfaces;
 using Business.Services;
@@ -7,8 +8,9 @@ using Microsoft.Extensions.Hosting;
 
 
 var host = Host.CreateDefaultBuilder()
-    .ConfigureServices((context, services) =>
+    .ConfigureServices(services =>
     {
+        services.AddTransient<IJsonConverter, DefaultJsonConverter>();
         services.AddSingleton<IContactService, ContactService>();
         services.AddSingleton<ContactService>();
         services.AddSingleton<IFileService, FileService>();

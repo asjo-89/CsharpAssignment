@@ -5,7 +5,7 @@ namespace Business.Factories;
 
 public static class ContactFactory
 {
-    public static ContactForm Create() => new ContactForm();
+    public static ContactForm Create() => new();
     public static Contact Create(ContactForm form)
     {
         try
@@ -18,10 +18,9 @@ public static class ContactFactory
                 PhoneNumber = form.PhoneNumber,
                 StreetAddress = form.StreetAddress,
                 PostalCode = form.PostalCode,
-                City = form.City,
+                City = form.City
             };
             return newContact;
-
         }
         catch (Exception e)
         {

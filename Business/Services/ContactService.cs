@@ -8,7 +8,7 @@ namespace Business.Services;
 public class ContactService : IContactService
 {
     private readonly IFileService _fileService;
-    private readonly List<Contact> _contacts = [];
+    private readonly List<Contact> _contacts;
 
 
     public ContactService(IFileService fileService)
@@ -34,65 +34,37 @@ public class ContactService : IContactService
         }
     }
 
-    public Contact GetContactById(string id)
+    public Contact? GetContactById(string id)
     {
-        Contact? contact = _contacts.FirstOrDefault(x => x.Id == id);
-
-        if (contact == null)
-        {
-            return null!;
-        }
-        return contact;
+        return _contacts.FirstOrDefault(x => x.Id == id);
     }
 
-    public bool UpdateContact(string id, ContactForm form)
+    public bool UpdateContact(string? id, ContactForm? form)
     {
         if (id == null || form == null) return false;
 
-        for (int i = 0; i < _contacts.Count; i++)
+        foreach (Contact t in _contacts)
         {
-            if (_contacts[i].Id == id)
-            {
-                if (!string.IsNullOrWhiteSpace(form.FirstName))
-                {
-                    _contacts[i].FirstName = form.FirstName;
-                }
+            if (t.Id != id) continue;
+            
+            if (!string.IsNullOrWhiteSpace(form.FirstName)) t.FirstName = form.FirstName;
 
-                if (!string.IsNullOrWhiteSpace(form.LastName))
-                {
-                    _contacts[i].LastName = form.LastName;
-                }
+            if (!string.IsNullOrWhiteSpace(form.LastName)) t.LastName = form.LastName;
 
-                if (!string.IsNullOrWhiteSpace(form.Email))
-                {
-                    _contacts[i].Email = form.Email;
-                }
+            if (!string.IsNullOrWhiteSpace(form.Email)) t.Email = form.Email;
 
-                int phone = form.PhoneNumber.ToString().Length;
-                if (phone > 0)
-                {
-                    _contacts[i].PhoneNumber = form.PhoneNumber;
-                }
+            int phone = form.PhoneNumber.Length;
+            if (phone > 0) t.PhoneNumber = form.PhoneNumber;
 
-                if (!string.IsNullOrWhiteSpace(form.StreetAddress))
-                {
-                    _contacts[i].StreetAddress = form.StreetAddress;
-                }
+            if (!string.IsNullOrWhiteSpace(form.StreetAddress)) t.StreetAddress = form.StreetAddress;
 
-                int postalCode = form.PostalCode.ToString().Length;
-                if (postalCode >= 5)
-                {
-                    _contacts[i].PostalCode = form.PostalCode;
-                }
+            int postalCode = form.PostalCode.ToString()!.Length;
+            if (postalCode >= 5) t.PostalCode = form.PostalCode;
 
-                if (!string.IsNullOrWhiteSpace(form.City))
-                {
-                    _contacts[i].City = form.City;
-                }
+            if (!string.IsNullOrWhiteSpace(form.City)) t.City = form.City;
 
-                _fileService.AddListToFile(_contacts);
-                return true;
-            }
+            _fileService.AddListToFile(_contacts);
+            return true;
         }
         return false;
     }
@@ -101,10 +73,7 @@ public class ContactService : IContactService
     {
         Contact? contact = _contacts.FirstOrDefault(x => x.Id == id);
 
-        if (contact == null)
-        {
-            return false;
-        }
+        if (contact == null) return false;
 
         _contacts.Remove(contact);
         _fileService.AddListToFile(_contacts);
@@ -116,6 +85,4 @@ public class ContactService : IContactService
         var newList = _fileService.LoadListFromFile();
         return newList;
     }
-
-   
 }

@@ -12,6 +12,37 @@ public class ContactService_Tests
 
     private readonly Mock<IFileService> _fileService2Mock;
     private readonly ContactService _contactService2;
+    
+    private readonly ContactForm _contact1 = new()
+    {
+        FirstName = "Test1",
+        LastName = "Testsson1",
+        Email = "test1@domain.com",
+        PhoneNumber = "1111111111",
+        StreetAddress = "Testvägen 1",
+        PostalCode = 11111,
+        City = "Teststad"
+    };
+    private readonly ContactForm _contact2 = new()
+    {
+        FirstName = "Test2",
+        LastName = "Testsson2",
+        Email = "test2@domain.com",
+        PhoneNumber = "2111111111",
+        StreetAddress = "Testvägen 2",
+        PostalCode = 22222,
+        City = "Teststad"
+    };
+    private readonly ContactForm _updatedContact = new()
+    {
+        FirstName = "Testing",
+        LastName = "Testing",
+        Email = "",
+        PhoneNumber = "0",
+        StreetAddress = "Testvägen 2",
+        PostalCode = 22222,
+        City = "Teststad"
+    };
 
     public ContactService_Tests()
     {
@@ -29,7 +60,7 @@ public class ContactService_Tests
     public void AddContact_ShouldReturnTrue_WhenContactIsAddedSuccessfully()
     {
         // Arrange
-        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "0721234567", StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
+        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "1111111111", StreetAddress = "Testvägen 1", PostalCode = 11111, City = "Teststad" };
 
         // Act
         var result = _contactService.AddContact(contact1);
@@ -38,14 +69,14 @@ public class ContactService_Tests
         Assert.True(result);
         _fileServiceMock.Verify(fs => fs.AddListToFile(It.IsAny<List<Contact>>()), Times.Once);
         _fileServiceMock.Verify(fs => fs.AddListToFile(It.Is<List<Contact>>(list => list.Any(x => 
-            x.FirstName == "Test1" && x.LastName == "Testsson1" && x.Email == "test1@domain.com" && x.PhoneNumber == "0721234567" && x.StreetAddress == "Testvägen 1" && x.PostalCode == 12345 && x.City == "Test1"))));
+            x.FirstName == contact1.FirstName && x.LastName == contact1.LastName && x.Email == contact1.Email && x.PhoneNumber == contact1.PhoneNumber && x.StreetAddress == contact1.StreetAddress && x.PostalCode == contact1.PostalCode && x.City == contact1.City))));
     }
 
     [Fact]
     public void AddContact_ShouldReturnFalse_WhenThereIsNoList()
     {
         // Arrange
-        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "0721234567", StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
+        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "1111111111", StreetAddress = "Testvägen 1", PostalCode = 11111, City = "Teststad" };
 
         // Act
         var result = _contactService2.AddContact(contact1);
@@ -59,15 +90,15 @@ public class ContactService_Tests
     public void GetAll_ShouldReturnIEnumerableList()
     {
         // Arrange
-        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "0721234567", StreetAddress = "Testvägen 1", PostalCode = 12345, City = "Test1" };
+        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "1111111111", StreetAddress = "Testvägen 1", PostalCode = 11111, City = "Teststad" };
         _contactService.AddContact(contact1);
 
         // Act
-        var result = _contactService.GetAll();
+        var result = _contactService.GetAll().ToList();
 
         // Assert
         Assert.NotEmpty(result);
-        Assert.Contains(result, c => c.Email == "test1@domain.com");
+        Assert.Contains(result, c => c.Email == contact1.Email);
         Assert.IsAssignableFrom<IEnumerable<Contact>>(result);
     }
 
@@ -75,37 +106,17 @@ public class ContactService_Tests
     public void GetContactById_ShouldReturnContactWithCorrectData_WhenIdMatchesToIdOfAContactInList()
     {
         // Arrange
-        ContactForm contact1 = new()
-        { 
-            FirstName = "Test1", 
-            LastName = "Testsson1", 
-            Email = "test1@domain.com", 
-            PhoneNumber = "1111111111", 
-            StreetAddress = "Testvägen 1", 
-            PostalCode = 11111, 
-            City = "Teststad"
-        };
-        ContactForm contact2 = new()
-        {
-            FirstName = "Test2",
-            LastName = "Testsson2",
-            Email = "test2@domain.com",
-            PhoneNumber = "2111111111",
-            StreetAddress = "Testvägen 2",
-            PostalCode = 22222,
-            City = "Teststad"
-        };
+        _contactService.AddContact(_contact1);
+        _contactService.AddContact(_contact2);
 
-        _contactService.AddContact(contact1);
-        _contactService.AddContact(contact2);
-
-        var list = _contactService.GetAll().ToList();
-        var contact = list[1].Id;
+        List<Contact> list = _contactService.GetAll().ToList();
+        string contactId = list[1].Id;
 
         // Act
-        Contact result = _contactService.GetContactById(contact);
+        Contact? result = _contactService.GetContactById(contactId);
 
         //Assert
+        Assert.NotNull(result);
         Assert.Equal(list[1].Id, result.Id);
         Assert.Equal(list[1].FirstName, result.FirstName);
     }
@@ -115,50 +126,19 @@ public class ContactService_Tests
     public void UpdateContact_ShouldReturnTrue_WhenContactIsUpdatedInList_WithTheNewParameterData()
     {
         // Arrange
-        ContactForm contact1 = new()
-        {
-            FirstName = "Test1",
-            LastName = "Testsson1",
-            Email = "test1@domain.com",
-            PhoneNumber = "1111111111",
-            StreetAddress = "Testvägen 1",
-            PostalCode = 11111,
-            City = "Teststad"
-        };
-        ContactForm contact2 = new()
-        {
-            FirstName = "Test2",
-            LastName = "Testsson2",
-            Email = "test2@domain.com",
-            PhoneNumber = "2111111111",
-            StreetAddress = "Testvägen 2",
-            PostalCode = 22222,
-            City = "Teststad"
-        };
-        ContactForm updatedContact = new()
-        {
-            FirstName = "Testing",
-            LastName = "Testing",
-            Email = "",
-            PhoneNumber = "0",
-            StreetAddress = "Testvägen 2",
-            PostalCode = 22222,
-            City = "Teststad"
-        };
-
-        _contactService.AddContact(contact1);
-        _contactService.AddContact(contact2);
+        _contactService.AddContact(_contact1);
+        _contactService.AddContact(_contact2);
 
         var list = _contactService.GetAll().ToList();
         var id = list[1].Id;
         var contact = list[1];
 
         // Act
-        bool result = _contactService.UpdateContact(id, updatedContact);
+        bool result = _contactService.UpdateContact(id, _updatedContact);
 
         //Assert
         Assert.True(result);
-        Assert.Equal(updatedContact.FirstName, contact.FirstName);
+        Assert.Equal(_updatedContact.FirstName, contact.FirstName);
     }
 
     //Gör separat test för att rätt kontakt tas bort ur listan.
@@ -166,39 +146,19 @@ public class ContactService_Tests
     public void DeleteContact_ShouldReturnTrue_WhenContactIsDeletedFromList()
     {
         // Arrange
-        ContactForm contact1 = new()
-        {
-            FirstName = "Test1",
-            LastName = "Testsson1",
-            Email = "test1@domain.com",
-            PhoneNumber = "1111111111",
-            StreetAddress = "Testvägen 1",
-            PostalCode = 11111,
-            City = "Teststad"
-        };
-        ContactForm contact2 = new()
-        {
-            FirstName = "Test2",
-            LastName = "Testsson2",
-            Email = "test2@domain.com",
-            PhoneNumber = "2111111111",
-            StreetAddress = "Testvägen 2",
-            PostalCode = 22222,
-            City = "Teststad"
-        };
+        _contactService.AddContact(_contact1);
+        _contactService.AddContact(_contact2);
 
-        _contactService.AddContact(contact1);
-        _contactService.AddContact(contact2);
-
-        var list = _contactService.GetAll().ToList();
-        var id = list[1].Id;
+        List<Contact> list = _contactService.GetAll().ToList();
+        string id = list[1].Id;
 
         // Act
         bool result = _contactService.DeleteContact(id);
 
         //Assert
         Assert.True(result);
+        list = _contactService.GetAll().ToList();
         Assert.Single(list);
-        Assert.Equal(list[0].FirstName, contact1.FirstName);
+        Assert.Equal(list[0].FirstName, _contact1.FirstName);
     }
 }

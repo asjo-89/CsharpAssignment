@@ -5,14 +5,12 @@ namespace MainApp_WPF.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    private readonly IServiceProvider _serviceProvider;
 
     [ObservableProperty]
     private ObservableObject _currentViewModel = null!;
 
     public MainViewModel(IServiceProvider serviceProvider)
     {
-        _serviceProvider = serviceProvider;
-        CurrentViewModel = _serviceProvider.GetRequiredService<ListViewModel>();
+        CurrentViewModel = serviceProvider.GetRequiredService<ListViewModel>();
     }
 }

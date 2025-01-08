@@ -46,4 +46,6 @@ public class ContactFactory_Tests
         Assert.Equal(contact.PostalCode, result.PostalCode);
         Assert.Equal(contact.City, result.City);
     }
+    
+    //Test för att få Exception om Contact Create ej returnerar contact.
 }

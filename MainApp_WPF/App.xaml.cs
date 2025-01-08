@@ -1,22 +1,24 @@
-﻿using Business.Interfaces;
+﻿using Business.Converters;
+using Business.Interfaces;
 using Business.Services;
 using MainApp_WPF.ViewModels;
 using MainApp_WPF.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.IO;
 using System.Windows;
 
 namespace MainApp_WPF;
-public partial class App : Application
+public partial class App
 {
-    private IHost _host;
+    private readonly IHost _host;
 
     public App()
     {
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
+
+                services.AddTransient<IJsonConverter, DefaultJsonConverter>();
                 services.AddSingleton<IFileService, FileService>();
                 services.AddTransient<IContactService, ContactService>();
 

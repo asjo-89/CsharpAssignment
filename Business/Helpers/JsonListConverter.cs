@@ -1,20 +1,20 @@
-﻿using Business.Interfaces;
-using Business.Models;
+﻿using Business.Models;
 using System.Text.Json;
+using Business.Interfaces;
 
 namespace Business.Helpers;
 
-public static class JsonListConverter
+public abstract class JsonListConverter : IJsonConverter
 {
-    public static string ConvertToJson(List<Contact> list)
+    public string ConvertToJson(List<Contact> list)
     {
         string json = JsonSerializer.Serialize(list);
         return json;
     }
 
-    public static List<Contact> ConvertToList(string json)
+    public List<Contact> ConvertToList(string json)
     {
-        var list = JsonSerializer.Deserialize<List<Contact>>(json);
+        List<Contact>? list = JsonSerializer.Deserialize<List<Contact>>(json);
         return list ?? [];
     }
 }

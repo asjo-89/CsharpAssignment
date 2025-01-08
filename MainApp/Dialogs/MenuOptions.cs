@@ -1,17 +1,11 @@
 ﻿using Business.Factories;
 using Business.Interfaces;
 using Business.Models;
-using Business.Services;
-using System;
-using System.Diagnostics;
 
 namespace MainApp_Console.Dialogs
 {
     public class MenuOptions(IContactService contactService)
     {
-        private readonly IContactService _contactService = contactService;
-
-
         public void CreateContact()
         {
             ContactForm form = ContactFactory.Create();
@@ -51,7 +45,7 @@ namespace MainApp_Console.Dialogs
             Console.Write("Enter city: ");
             form.City = Console.ReadLine()!;
 
-            _contactService.AddContact(form);
+            contactService.AddContact(form);
 
             Console.ReadKey();
         }
@@ -61,7 +55,7 @@ namespace MainApp_Console.Dialogs
             ContactForm form = new();
 
             Console.Clear();
-            List<Contact> list = _contactService.GetAll().ToList();
+            List<Contact> list = contactService.GetAll().ToList();
 
             int counter = 1;
             foreach (Contact contact in list)
@@ -85,7 +79,7 @@ namespace MainApp_Console.Dialogs
                 bool parsed = int.TryParse(Console.ReadLine(), out int index);
                 if (parsed && index <= list.Count && index >= 1)
                 {
-                    Contact validId = _contactService.GetContactById(list[index - 1].Id);
+                    Contact? validId = contactService.GetContactById(list[index - 1].Id);
 
                     if (validId == null)
                     {
@@ -95,28 +89,33 @@ namespace MainApp_Console.Dialogs
                     }
 
                     Console.Clear();
-                    Console.WriteLine("\nIf there is a field you don't want to change just leave it empty.\n");
+                    Console.WriteLine("If there is a field you don't want to change just leave it empty.\n");
 
                     Console.Write("Enter new first name: ");
                     form.FirstName = Console.ReadLine()!;
 
-                    Console.Write("\nEnter new last name: ");
+                    Console.Write("Enter new last name: ");
                     form.LastName = Console.ReadLine()!;
 
-                    Console.Write("\nEnter new email: ");
+                    Console.Write("Enter new email: ");
                     form.Email = Console.ReadLine()!;
 
-                    Console.Write("\nEnter new phone number: ");
+                    Console.Write("Enter new phone number: ");
                     form.PhoneNumber = Console.ReadLine()!;
 
-                    Console.Write("\nEnter new street address: ");
+                    Console.Write("Enter new street address: ");
                     form.StreetAddress = Console.ReadLine()!;
 
                     while (valid)
                     {
-                        Console.Write("\nEnter new postal code: ");
-                        parsed = int.TryParse(Console.ReadLine(), out int value);
-                        if (parsed)
+                        Console.Write("Enter new postal code: ");
+                        string input = Console.ReadLine()!;
+                        
+                        if (input == "")
+                        {
+                            valid = false;
+                        }
+                        else if (int.TryParse(input, out int value))
                         {
                             form.PostalCode = value;
                             valid = false;
@@ -130,7 +129,7 @@ namespace MainApp_Console.Dialogs
                     Console.Write("Enter new city: ");
                     form.City = Console.ReadLine()!;
 
-                    var successUpdate = _contactService.UpdateContact(validId.Id, form);
+                    var successUpdate = contactService.UpdateContact(validId.Id, form);
 
                     if (!successUpdate)
                     {
@@ -156,7 +155,7 @@ namespace MainApp_Console.Dialogs
         public void DeleteContact()
         {
             Console.Clear();
-            List<Contact> list = _contactService.GetAll().ToList();
+            List<Contact> list = contactService.GetAll().ToList();
 
             int counter = 1;
             foreach (Contact contact in list)
@@ -180,27 +179,20 @@ namespace MainApp_Console.Dialogs
                 bool parsed = int.TryParse(Console.ReadLine(), out int index);
                 if (parsed)
                 {
-                    Contact validId = _contactService.GetContactById(list[index - 1].Id);
-
-                    if (validId == null)
+                    //Contact validId = _contactService.GetContactById(list[index - 1].Id);
+                    var delete = contactService.DeleteContact(list[index - 1].Id);
+                    switch (delete)
                     {
-                        Console.WriteLine("No contact with that id was found.");
-                        Console.ReadKey();
-                        return;
+                        case true:
+                            Console.WriteLine("The contact was successfully deleted.");
+                            Console.ReadKey();
+                            valid = false;
+                            break;
+                        case false:
+                            Console.WriteLine("No contact with that id was found.");
+                            Console.ReadKey();
+                            break;
                     }
-                    var delete = _contactService.DeleteContact(list[index - 1].Id);
-
-                    if (!delete)
-                    {
-                        Console.WriteLine("No contact with that id was found.");
-                        Console.ReadKey();
-                        return;
-                    }
-
-                    Console.WriteLine("The contact was successfully deleted.");
-                    Console.ReadKey();
-                    
-                    valid = false;
                 }
                 else
                 {
@@ -212,7 +204,7 @@ namespace MainApp_Console.Dialogs
         public void ShowAllContacts()
         {
             Console.Clear();
-            var list = _contactService.GetAll();
+            var list = contactService.GetAll();
 
             int counter = 1;
             foreach (Contact contact in list)

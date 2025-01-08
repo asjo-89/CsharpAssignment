@@ -1,6 +1,5 @@
 ﻿using Business.Interfaces;
 using Business.Models;
-using Business.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +20,7 @@ public partial class ListViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    public string _title = "Contacts";
+    private string _title = "Contacts";
 
     [ObservableProperty]
     private ObservableCollection<Contact> _contacts = [];
@@ -43,7 +42,7 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void DeleteContact(Contact contact)
+    private void DeleteContact(Contact? contact)
     {
         if (contact is null)
         {

@@ -1,26 +1,31 @@
-﻿using Business.Helpers;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Business.Models;
 using System.Diagnostics;
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Business.Services;
 
 public class FileService : IFileService
 {
-    private readonly string _directoryPath;
-    private readonly string _filePath;
+    private readonly string _filePath; 
+    private readonly IJsonConverter _jsonConverter;
 
-
-    public FileService()
+    // Kolla konstruktorn
+    public FileService(IJsonConverter jsonConverter) 
+        : this(jsonConverter, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists", "ContactsList.json"))
+    {}
+    
+    public FileService(IJsonConverter jsonConverter, string filePath)
     {
-        _directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists");
-        _filePath = Path.Combine(_directoryPath, "ContactsList.json");
-
-        if (!Directory.Exists(_directoryPath))
+        _jsonConverter = jsonConverter;
+        _filePath = filePath;
+        
+        var directoryPath = Path.GetDirectoryName(_filePath);
+        if (!Directory.Exists(directoryPath) && !string.IsNullOrWhiteSpace(directoryPath))
         {
-            Directory.CreateDirectory(_directoryPath);
+            Directory.CreateDirectory(directoryPath);
         }
+
         if (!File.Exists(_filePath))
         {
             File.WriteAllText(_filePath, "[]");
@@ -31,7 +36,7 @@ public class FileService : IFileService
     {
         try
         {
-            var json = JsonListConverter.ConvertToJson(list);
+            var json = _jsonConverter.ConvertToJson(list);
             File.WriteAllText(_filePath, json);
             return true;
         }
@@ -47,7 +52,7 @@ public class FileService : IFileService
         try
         {
             string json = File.ReadAllText(_filePath);
-            var contacts = JsonListConverter.ConvertToList(json);
+            var contacts = _jsonConverter.ConvertToList(json);
             return contacts;
         }
         catch (Exception ex)
