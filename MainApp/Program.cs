@@ -1,5 +1,4 @@
-﻿
-using Business.Converters;
+﻿using Business.Helpers;
 using MainApp_Console.Dialogs;
 using Business.Interfaces;
 using Business.Services;
@@ -10,10 +9,16 @@ using Microsoft.Extensions.Hosting;
 var host = Host.CreateDefaultBuilder()
     .ConfigureServices(services =>
     {
-        services.AddTransient<IJsonConverter, DefaultJsonConverter>();
+        services.AddTransient<IJsonConverter, JsonListConverter>();
         services.AddSingleton<IContactService, ContactService>();
         services.AddSingleton<ContactService>();
-        services.AddSingleton<IFileService, FileService>();
+        services.AddSingleton<IFileSetupService, FileSetupService>();
+        services.AddSingleton<IFileService>(provider =>
+        {
+            var jsonConverter = provider.GetRequiredService<IJsonConverter>();
+            var fileSetupService = provider.GetRequiredService<IFileSetupService>();
+            return new FileService(jsonConverter, fileSetupService, null);
+        });
         services.AddSingleton<MainMenu>();
     })
     .UseDefaultServiceProvider(options =>

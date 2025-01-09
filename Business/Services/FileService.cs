@@ -9,26 +9,48 @@ public class FileService : IFileService
 {
     private readonly string _filePath; 
     private readonly IJsonConverter _jsonConverter;
+    private readonly IFileSetupService _fileSetupService;
 
-    // Kolla konstruktorn
-    public FileService(IJsonConverter jsonConverter) 
-        : this(jsonConverter, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists", "ContactsList.json"))
-    {}
+    // public FileService(IJsonConverter jsonConverter)
+    //     : this(jsonConverter,
+    //         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists",
+    //             "ContactsList.json"))
+    // {
+    //     
+    // }
     
-    public FileService(IJsonConverter jsonConverter, string filePath)
+    // public FileService(IJsonConverter jsonConverter, string filePath)
+    // {
+    //     _jsonConverter = jsonConverter;
+    //     _filePath = filePath;
+    //     
+    //     var directoryPath = Path.GetDirectoryName(_filePath);
+    //     if (!Directory.Exists(directoryPath) && !string.IsNullOrWhiteSpace(directoryPath))
+    //     {
+    //         Directory.CreateDirectory(directoryPath);
+    //     }
+    //
+    //     if (!File.Exists(_filePath))
+    //     {
+    //         File.WriteAllText(_filePath, "[]");
+    //     }
+    // }
+    
+    public FileService(IJsonConverter jsonConverter, IFileSetupService fileSetupService,  string? filePath)
     {
         _jsonConverter = jsonConverter;
-        _filePath = filePath;
+        _fileSetupService = fileSetupService;
+        _filePath = filePath ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists", "ContactsList.json");
         
         var directoryPath = Path.GetDirectoryName(_filePath);
-        if (!Directory.Exists(directoryPath) && !string.IsNullOrWhiteSpace(directoryPath))
+        if (!string.IsNullOrWhiteSpace(directoryPath) && !_fileSetupService.DirectoryExists(directoryPath))
         {
-            Directory.CreateDirectory(directoryPath);
+            _fileSetupService.CreateDirectory(directoryPath);
         }
-
-        if (!File.Exists(_filePath))
+        
+        if (!_fileSetupService.FileExists(_filePath))
         {
-            File.WriteAllText(_filePath, "[]");
+            _fileSetupService.WriteAllText(_filePath, "[]");
         }
     }
 
@@ -37,7 +59,7 @@ public class FileService : IFileService
         try
         {
             var json = _jsonConverter.ConvertToJson(list);
-            File.WriteAllText(_filePath, json);
+            _fileSetupService.WriteAllText(_filePath, json);
             return true;
         }
         catch (Exception ex)
@@ -51,7 +73,7 @@ public class FileService : IFileService
     {
         try
         {
-            string json = File.ReadAllText(_filePath);
+            string json = _fileSetupService.ReadAllText(_filePath);
             var contacts = _jsonConverter.ConvertToList(json);
             return contacts;
         }
