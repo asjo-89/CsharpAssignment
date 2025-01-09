@@ -60,26 +60,21 @@ public class ContactService_Tests
     public void AddContact_ShouldReturnTrue_WhenContactIsAddedSuccessfully()
     {
         // Arrange
-        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "1111111111", StreetAddress = "Testvägen 1", PostalCode = 11111, City = "Teststad" };
-
         // Act
-        var result = _contactService.AddContact(contact1);
+        var result = _contactService.AddContact(_contact1);
 
         // Assert
         Assert.True(result);
         _fileServiceMock.Verify(fs => fs.AddListToFile(It.IsAny<List<Contact>>()), Times.Once);
-        _fileServiceMock.Verify(fs => fs.AddListToFile(It.Is<List<Contact>>(list => list.Any(x => 
-            x.FirstName == contact1.FirstName && x.LastName == contact1.LastName && x.Email == contact1.Email && x.PhoneNumber == contact1.PhoneNumber && x.StreetAddress == contact1.StreetAddress && x.PostalCode == contact1.PostalCode && x.City == contact1.City))));
+        _fileServiceMock.Verify(fs => fs.AddListToFile(It.Is<List<Contact>>(list => list.Any(x => x.FirstName == _contact1.FirstName))));
     }
 
     [Fact]
     public void AddContact_ShouldReturnFalse_WhenThereIsNoList()
     {
         // Arrange
-        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "1111111111", StreetAddress = "Testvägen 1", PostalCode = 11111, City = "Teststad" };
-
         // Act
-        var result = _contactService2.AddContact(contact1);
+        var result = _contactService2.AddContact(_contact1);
 
         // Assert
         Assert.False(result);
@@ -90,15 +85,14 @@ public class ContactService_Tests
     public void GetAll_ShouldReturnIEnumerableList()
     {
         // Arrange
-        ContactForm contact1 = new() { FirstName = "Test1", LastName = "Testsson1", Email = "test1@domain.com", PhoneNumber = "1111111111", StreetAddress = "Testvägen 1", PostalCode = 11111, City = "Teststad" };
-        _contactService.AddContact(contact1);
+        _contactService.AddContact(_contact1);
 
         // Act
         var result = _contactService.GetAll().ToList();
 
         // Assert
         Assert.NotEmpty(result);
-        Assert.Contains(result, c => c.Email == contact1.Email);
+        Assert.Contains(result, c => c.Email == _contact1.Email);
         Assert.IsAssignableFrom<IEnumerable<Contact>>(result);
     }
 

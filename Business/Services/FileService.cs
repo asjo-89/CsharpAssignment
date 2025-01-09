@@ -10,31 +10,6 @@ public class FileService : IFileService
     private readonly string _filePath; 
     private readonly IJsonConverter _jsonConverter;
     private readonly IFileSetupService _fileSetupService;
-
-    // public FileService(IJsonConverter jsonConverter)
-    //     : this(jsonConverter,
-    //         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists",
-    //             "ContactsList.json"))
-    // {
-    //     
-    // }
-    
-    // public FileService(IJsonConverter jsonConverter, string filePath)
-    // {
-    //     _jsonConverter = jsonConverter;
-    //     _filePath = filePath;
-    //     
-    //     var directoryPath = Path.GetDirectoryName(_filePath);
-    //     if (!Directory.Exists(directoryPath) && !string.IsNullOrWhiteSpace(directoryPath))
-    //     {
-    //         Directory.CreateDirectory(directoryPath);
-    //     }
-    //
-    //     if (!File.Exists(_filePath))
-    //     {
-    //         File.WriteAllText(_filePath, "[]");
-    //     }
-    // }
     
     public FileService(IJsonConverter jsonConverter, IFileSetupService fileSetupService,  string? filePath)
     {

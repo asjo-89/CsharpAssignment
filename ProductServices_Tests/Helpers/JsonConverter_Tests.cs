@@ -1,11 +1,12 @@
-﻿using Business.Converters;
+﻿using Business.Helpers;
+using Business.Interfaces;
 using Business.Models;
 
 namespace Business.Tests.Helpers;
 
 public class JsonConverter_Tests
 {
-    private readonly DefaultJsonConverter _jsonConverter = new();
+    private readonly IJsonConverter _jsonConverter = new JsonListConverter();
     private readonly Contact _contact = new()
     {
         Id = "1", 

@@ -1,38 +1,54 @@
-﻿using Business.Converters;
+﻿using Business.Helpers;
+using Business.Interfaces;
 using Business.Models;
 using Business.Services;
+using Moq;
 using Newtonsoft.Json;
 
 namespace Business.Tests.Services;
 
 public class FileService_Tests
 {
-    private readonly DefaultJsonConverter _jsonConverter = new();
+    private readonly IJsonConverter _jsonConverter = new JsonListConverter();
+    private readonly Mock<IFileService> _mockFileService;
+    private readonly Mock<IFileSetupService> _mockFileSetupService;    
+    private readonly Mock<IJsonConverter> _mockConverter;
+
+    public FileService_Tests()
+    { 
+        _mockFileService = new Mock<IFileService>();
+        _mockFileService.Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>())).Returns(true);
+        _mockFileService.Setup(fs => fs.LoadListFromFile()).Returns([]);
+        
+        _mockConverter = new Mock<IJsonConverter>();
+        _mockConverter.Setup(c => c.ConvertToJson(It.IsAny<List<Contact>>())).Returns("[]");
+
+        _mockFileSetupService = new Mock<IFileSetupService>();
+        _mockFileSetupService.Setup(fss => fss.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Throws(new Exception("ExceptionTest"));
+    }
+
     
+
     [Fact]
-    public void AddListToFile_ShouldReturnTrue_WhenListIsAddedToFile()
+    public void AddListToFile_ShouldReturnFalse_WhenWriteAllTextThrowsException()
     {
         // Arrange
-        string directoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        const string fileName = "List.json";
-        string fullPath = Path.Combine(directoryPath, fileName);
-        Directory.CreateDirectory(directoryPath);
-        FileService fileService = new FileService(_jsonConverter, fullPath);
-        List<Contact> list = new List<Contact>();
+        string testFilePath = "testFilePath";
 
+        var fileService = new FileService
+        (
+            _mockConverter.Object,
+            _mockFileSetupService.Object,
+            testFilePath
+        );
+
+        List<Contact> testList = new List<Contact>();
         // Act
-        bool result = fileService.AddListToFile(list);
+        bool result = fileService.AddListToFile(testList);
 
         // Assert
-        Assert.True(result);
-        Assert.True(File.Exists(fullPath));
-
-        // Clean
-        File.Delete(Path.Combine(fullPath));
-        Directory.Delete(Path.Combine(directoryPath), true);
+        Assert.False(result);
     }
-    
-    //Separat test för om filen skapas.
 
     [Fact]
     public void LoadListFromFile_ShouldReturnListWithCorrectData_WhenListIsLoadedFromFile()
@@ -40,10 +56,8 @@ public class FileService_Tests
         // Arrange
         string directoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         const string fileName = "List.json";
-        Directory.CreateDirectory(directoryPath);
-
-        string filePath = Path.Combine(directoryPath, fileName);
-        List<Contact> contacts = new List<Contact>();
+        string fullPath = Path.Combine(directoryPath, fileName);
+        List<Contact> contacts = new();
 
         Contact contact = new()
         {
@@ -59,9 +73,8 @@ public class FileService_Tests
         contacts.Add(contact);
 
         string json = JsonConvert.SerializeObject(contacts);
-        File.WriteAllText(filePath, json);
-
-        FileService fileService = new FileService(_jsonConverter);
+        File.WriteAllText(fullPath, json);
+        FileService fileService = new FileService(_jsonConverter, fullPath);
 
         // Act
         List<Contact> result = fileService.LoadListFromFile();
