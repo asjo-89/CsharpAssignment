@@ -1,5 +1,4 @@
-﻿using Business.Helpers;
-using Business.Interfaces;
+﻿using Business.Interfaces;
 using Business.Models;
 using Business.Services;
 using Moq;
@@ -9,91 +8,112 @@ namespace Business.Tests.Services;
 
 public class FileService_Tests
 {
-    private readonly IJsonConverter _jsonConverter = new JsonListConverter();
-    private readonly Mock<IFileService> _mockFileService;
-    private readonly Mock<IFileSetupService> _mockFileSetupService;    
-    private readonly Mock<IJsonConverter> _mockConverter;
+    private readonly Mock<IFileSetupService> _mockFileSetupService = new();    
+    private readonly Mock<IJsonConverter> _mockConverter = new();
 
-    public FileService_Tests()
-    { 
-        _mockFileService = new Mock<IFileService>();
-        _mockFileService.Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>())).Returns(true);
-        _mockFileService.Setup(fs => fs.LoadListFromFile()).Returns([]);
+
+    [Fact]
+    public void AddListFile_ShouldReturnTrue_WhenFileIsAddedToFile()
+    {
+        // Arrange
+        string testFilePath = "testFilePath";
+        List<Contact> list = new List<Contact>();
         
-        _mockConverter = new Mock<IJsonConverter>();
         _mockConverter.Setup(c => c.ConvertToJson(It.IsAny<List<Contact>>())).Returns("[]");
+        _mockFileSetupService.Setup(f => f.FileExists(testFilePath)).Returns(true);
+        _mockFileSetupService.Setup(f => f.WriteAllText(It.IsAny<string>(), It.IsAny<string>()));
 
-        _mockFileSetupService = new Mock<IFileSetupService>();
-        _mockFileSetupService.Setup(fss => fss.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Throws(new Exception("ExceptionTest"));
+        var fileService = new FileService(
+            _mockConverter.Object,
+            _mockFileSetupService.Object,
+            testFilePath);
+        
+        // Act
+        bool result = fileService.AddListToFile(list);
+        
+        // Assert
+        Assert.True(result);
+        _mockFileSetupService.Verify(fss => fss.WriteAllText(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
-
-    
 
     [Fact]
     public void AddListToFile_ShouldReturnFalse_WhenWriteAllTextThrowsException()
     {
         // Arrange
-        string testFilePath = "testFilePath";
+        _mockConverter.Setup(c => c.ConvertToJson(It.IsAny<List<Contact>>())).Returns("[]");
+        _mockFileSetupService.Setup(c => c.FileExists(It.IsAny<string>())).Returns(true);
+        _mockFileSetupService.Setup(fss => fss.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
+                                    .Throws(new Exception("ExceptionTest"));
 
-        var fileService = new FileService
-        (
+        string testFilePath = "testFilePath";
+        var fileService = new FileService(
             _mockConverter.Object,
             _mockFileSetupService.Object,
-            testFilePath
-        );
-
+            testFilePath);
         List<Contact> testList = new List<Contact>();
+        
         // Act
         bool result = fileService.AddListToFile(testList);
 
         // Assert
         Assert.False(result);
+        _mockFileSetupService.Verify(fss => fss.WriteAllText(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
 
     [Fact]
-    public void LoadListFromFile_ShouldReturnListWithCorrectData_WhenListIsLoadedFromFile()
+    public void LoadListFromFile_ShouldReturnListWithContentFromJsonFile_WhenListIsLoadedFromFile()
     {
         // Arrange
-        string directoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        const string fileName = "List.json";
-        string fullPath = Path.Combine(directoryPath, fileName);
-        List<Contact> contacts = new();
-
-        Contact contact = new()
+        string testFile = "testFile";
+        Contact testContact = new Contact
         {
-            Id = "1", 
-            FirstName = "Test1", 
-            LastName = "Testsson1", 
-            Email = "test1@domain.com", 
-            PhoneNumber = "0721234567", 
-            StreetAddress = "Testvägen 1", 
-            PostalCode = 12345, 
-            City = "Test1"
+            Id = "1",
+            FirstName = "Test", LastName = "Test",
+            Email = "test@test.com", PhoneNumber = "12345",
+            StreetAddress = "Main Street", PostalCode = 12345, City = "Test"
         };
-        contacts.Add(contact);
+        List<Contact> testList = new();
+        testList.Add(testContact);
+        string testContent = JsonConvert.SerializeObject(testList);
+        
+        _mockConverter.Setup(c => c.ConvertToList(testContent)).Returns(testList);
+        _mockFileSetupService.Setup(fss => fss.ReadAllText(testFile)).Returns(testContent);
 
-        string json = JsonConvert.SerializeObject(contacts);
-        File.WriteAllText(fullPath, json);
-        FileService fileService = new FileService(_jsonConverter, fullPath);
+        var fileService = new FileService(
+            _mockConverter.Object,
+            _mockFileSetupService.Object,
+            testFile);
 
         // Act
-        List<Contact> result = fileService.LoadListFromFile();
+        var result = fileService.LoadListFromFile();
 
         // Assert
-        Assert.NotNull(result);
         Assert.IsType<List<Contact>>(result);
-        _= result.Any(x =>
-            x.Id == contact.Id 
-            && x.FirstName == contact.FirstName 
-            && x.LastName == contact.LastName 
-            && x.Email == contact.Email 
-            && x.PhoneNumber == contact.PhoneNumber 
-            && x.StreetAddress == contact.StreetAddress 
-            && x.PostalCode == contact.PostalCode 
-            && x.City == contact.City);
+        Assert.Equal(testList, result);
+    }
 
-        // Clean
-        File.Delete(Path.Combine(directoryPath, fileName));
-        Directory.Delete(Path.Combine(directoryPath), true);
+    [Fact]
+    public void LoadListFromFile_ShouldReturnEmptyList_WhenJsonFileIsInvalid()
+    {
+        // Arrange
+        string testFile = "testFile";
+        string invalidJsonFile = "invalidJsonFile"; 
+        
+        _mockFileSetupService.Setup(fss => fss.ReadAllText(testFile)).Returns(invalidJsonFile);
+        _mockConverter.Setup(c => c.ConvertToList(invalidJsonFile)).Returns(new List<Contact>());
+        
+        var fileService = new FileService(
+            _mockConverter.Object, 
+            _mockFileSetupService.Object, 
+            testFile
+            );
+        
+        // Act
+        var result = fileService.LoadListFromFile();
+        
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+        _mockConverter.Verify(c => c.ConvertToList(invalidJsonFile), Times.Once);
     }
 }
