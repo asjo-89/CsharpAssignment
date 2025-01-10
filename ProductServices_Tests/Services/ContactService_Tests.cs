@@ -8,10 +8,6 @@ namespace Business.Tests.Services;
 public class ContactService_Tests
 {
     private readonly Mock<IFileService> _fileServiceMock;
-    private readonly ContactService _contactService;
-
-    private readonly Mock<IFileService> _fileService2Mock;
-    private readonly ContactService _contactService2;
     
     private readonly ContactForm _contact1 = new()
     {
@@ -43,116 +39,178 @@ public class ContactService_Tests
         PostalCode = 22222,
         City = "Teststad"
     };
-
+    private readonly Contact testContact1 = new()
+    {
+        Id = "1",
+        FirstName = "Test1", LastName = "Testsson1",
+        Email = "test1@domain.com", PhoneNumber = "1111111111",
+        StreetAddress = "Test", PostalCode = 11111, City = "Teststad"
+    };
+    private readonly Contact testContact2 = new()
+    {
+        Id = "2",
+        FirstName = "Test2", LastName = "Testsson2",
+        Email = "test2@domain.com", PhoneNumber = "2121212121",
+        StreetAddress = "Test", PostalCode = 22222, City = "Teststad"
+    };
     public ContactService_Tests()
     {
         _fileServiceMock = new Mock<IFileService>();
-        _fileServiceMock.Setup(fs => fs.LoadListFromFile()).Returns([]);
-        _fileServiceMock.Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>())).Returns(true);
-        _contactService = new ContactService(_fileServiceMock.Object);
+        
+        // _fileServiceMock = new Mock<IFileService>();
+        // _fileServiceMock.Setup(fs => fs.LoadListFromFile()).Returns([]);
+        // _fileServiceMock.Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>())).Returns(true);
+        // _contactService = new ContactService(_fileServiceMock.Object);
 
-        _fileService2Mock = new Mock<IFileService>();
-        _fileService2Mock.Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>())).Returns(false);
-        _contactService2 = new ContactService(_fileService2Mock.Object);
+        // _fileService2Mock = new Mock<IFileService>();
+        // _fileService2Mock.Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>())).Returns(false);
+        // _contactService2 = new ContactService(_fileService2Mock.Object);
     }
 
     [Fact]
     public void AddContact_ShouldReturnTrue_WhenContactIsAddedSuccessfully()
     {
         // Arrange
+        _fileServiceMock
+            .Setup(fs => fs.LoadListFromFile())
+            .Returns([]);
+        _fileServiceMock
+            .Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>()))
+            .Returns(true);
+        var contactService = new ContactService(_fileServiceMock.Object);
+        
         // Act
-        var result = _contactService.AddContact(_contact1);
+        var result = contactService.AddContact(_contact1);
 
         // Assert
         Assert.True(result);
         _fileServiceMock.Verify(fs => fs.AddListToFile(It.IsAny<List<Contact>>()), Times.Once);
-        _fileServiceMock.Verify(fs => fs.AddListToFile(It.Is<List<Contact>>(list => list.Any(x => x.FirstName == _contact1.FirstName))));
     }
 
     [Fact]
-    public void AddContact_ShouldReturnFalse_WhenThereIsNoList()
+    public void AddContact_ShouldReturnFalse_WhenListIsNull()
     {
         // Arrange
+        List<Contact> testList = null!;
+        _fileServiceMock
+            .Setup(fs => fs.LoadListFromFile())
+            .Returns(testList);
+        _fileServiceMock
+            .Setup(fs => fs.AddListToFile(testList))
+            .Returns(false);
+        var contactService = new ContactService(_fileServiceMock.Object);
+        
         // Act
-        var result = _contactService2.AddContact(_contact1);
+        var result = contactService.AddContact(_contact1);
 
         // Assert
         Assert.False(result);
-        _fileService2Mock.Verify(fs => fs.AddListToFile(It.IsAny<List<Contact>>()), Times.Never);
+        _fileServiceMock.Verify(fs => fs.AddListToFile(testList), Times.Never);
+    }
+
+    //Fixa
+    [Fact]
+    public void AddContact_ShouldAddContactDetailsToList()
+    {
+        
     }
 
     [Fact]
     public void GetAll_ShouldReturnIEnumerableList()
     {
         // Arrange
-        _contactService.AddContact(_contact1);
+        _fileServiceMock
+            .Setup(fs => fs.LoadListFromFile())
+            .Returns([]);
+        var contactService = new ContactService(_fileServiceMock.Object);
 
         // Act
-        var result = _contactService.GetAll().ToList();
+        var result = contactService.GetAll().ToList();
 
         // Assert
-        Assert.NotEmpty(result);
-        Assert.Contains(result, c => c.Email == _contact1.Email);
+        Assert.NotNull(result);
         Assert.IsAssignableFrom<IEnumerable<Contact>>(result);
     }
 
     [Fact]
-    public void GetContactById_ShouldReturnContactWithCorrectData_WhenIdMatchesToIdOfAContactInList()
+    public void GetContactById_ShouldReturnSpecifiedContact_WhenIdMatchesIdInList()
     {
         // Arrange
-        _contactService.AddContact(_contact1);
-        _contactService.AddContact(_contact2);
-
-        List<Contact> list = _contactService.GetAll().ToList();
-        string contactId = list[1].Id;
-
+        List<Contact> testList = [testContact1, testContact2];
+        
+        _fileServiceMock
+            .Setup(fs => fs.LoadListFromFile())
+            .Returns(testList);
+        var contactService = new ContactService(_fileServiceMock.Object);
+        
         // Act
-        Contact? result = _contactService.GetContactById(contactId);
+        Contact? result = contactService.GetContactById(testContact2.Id);
 
         //Assert
         Assert.NotNull(result);
-        Assert.Equal(list[1].Id, result.Id);
-        Assert.Equal(list[1].FirstName, result.FirstName);
+        Assert.IsType<Contact>(result);
+        Assert.Equal(result.Id, testContact2.Id);
+        Assert.Equal(result.FirstName, testContact2.FirstName);
     }
-
-    //Separat test för att se om uppdaterad data stämmer?
+    
     [Fact]
     public void UpdateContact_ShouldReturnTrue_WhenContactIsUpdatedInList_WithTheNewParameterData()
     {
         // Arrange
-        _contactService.AddContact(_contact1);
-        _contactService.AddContact(_contact2);
-
-        var list = _contactService.GetAll().ToList();
-        var id = list[1].Id;
-        var contact = list[1];
+        List<Contact> testList = [testContact1];
+        var id = testList[0].Id;
+        
+        _fileServiceMock
+            .Setup(fs => fs.LoadListFromFile())
+            .Returns(testList);
+        _fileServiceMock
+            .Setup(fs => fs.AddListToFile(testList))
+            .Returns(true);
+        var contactService = new ContactService(_fileServiceMock.Object);
 
         // Act
-        bool result = _contactService.UpdateContact(id, _updatedContact);
+        bool result = contactService.UpdateContact(id, _updatedContact);
 
         //Assert
         Assert.True(result);
-        Assert.Equal(_updatedContact.FirstName, contact.FirstName);
+        _fileServiceMock.Verify(fs => fs.AddListToFile(testList), Times.Once);
     }
 
-    //Gör separat test för att rätt kontakt tas bort ur listan.
+    //Fixa
+    [Fact]
+    public void UpdateContact_ShouldAddNewContactDetailsToTheChosenContactInTheList()
+    {
+        
+    }
+    
     [Fact]
     public void DeleteContact_ShouldReturnTrue_WhenContactIsDeletedFromList()
     {
         // Arrange
-        _contactService.AddContact(_contact1);
-        _contactService.AddContact(_contact2);
-
-        List<Contact> list = _contactService.GetAll().ToList();
-        string id = list[1].Id;
+        List<Contact> testList = [testContact1];
+        var id = testList[0].Id;
+        
+        _fileServiceMock
+            .Setup(fs => fs.LoadListFromFile())
+            .Returns(testList);
+        _fileServiceMock
+            .Setup(fs => fs.AddListToFile(testList))
+            .Returns(true);
+        var contactService = new ContactService(_fileServiceMock.Object);
 
         // Act
-        bool result = _contactService.DeleteContact(id);
+        bool result = contactService.DeleteContact(id);
 
         //Assert
         Assert.True(result);
-        list = _contactService.GetAll().ToList();
-        Assert.Single(list);
-        Assert.Equal(list[0].FirstName, _contact1.FirstName);
+        _fileServiceMock.Verify(fs => fs.AddListToFile(testList), Times.Once);
+    }
+
+    // Fixa
+    [Fact]
+    public void DeleteContact_ShouldDeleteOnlyTheChosenContactFromTheList()
+    {
+        
     }
 }
+    

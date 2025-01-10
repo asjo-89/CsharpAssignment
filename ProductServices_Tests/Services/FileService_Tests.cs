@@ -11,17 +11,21 @@ public class FileService_Tests
     private readonly Mock<IFileSetupService> _mockFileSetupService = new();    
     private readonly Mock<IJsonConverter> _mockConverter = new();
 
-
     [Fact]
-    public void AddListFile_ShouldReturnTrue_WhenFileIsAddedToFile()
+    public void AddListFile_ShouldReturnTrue_WhenListIsAddedToFile()
     {
         // Arrange
         string testFilePath = "testFilePath";
         List<Contact> list = new List<Contact>();
         
-        _mockConverter.Setup(c => c.ConvertToJson(It.IsAny<List<Contact>>())).Returns("[]");
-        _mockFileSetupService.Setup(f => f.FileExists(testFilePath)).Returns(true);
-        _mockFileSetupService.Setup(f => f.WriteAllText(It.IsAny<string>(), It.IsAny<string>()));
+        _mockConverter
+            .Setup(c => c.ConvertToJson(It.IsAny<List<Contact>>()))
+            .Returns("[]");
+        _mockFileSetupService
+            .Setup(f => f.FileExists(testFilePath))
+            .Returns(true);
+        _mockFileSetupService
+            .Setup(f => f.WriteAllText(It.IsAny<string>(), It.IsAny<string>()));
 
         var fileService = new FileService(
             _mockConverter.Object,
@@ -40,10 +44,15 @@ public class FileService_Tests
     public void AddListToFile_ShouldReturnFalse_WhenWriteAllTextThrowsException()
     {
         // Arrange
-        _mockConverter.Setup(c => c.ConvertToJson(It.IsAny<List<Contact>>())).Returns("[]");
-        _mockFileSetupService.Setup(c => c.FileExists(It.IsAny<string>())).Returns(true);
-        _mockFileSetupService.Setup(fss => fss.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
-                                    .Throws(new Exception("ExceptionTest"));
+        _mockConverter
+            .Setup(c => c.ConvertToJson(It.IsAny<List<Contact>>()))
+            .Returns("[]");
+        _mockFileSetupService
+            .Setup(c => c.FileExists(It.IsAny<string>()))
+            .Returns(true);
+        _mockFileSetupService
+            .Setup(fss => fss.WriteAllText(It.IsAny<string>(), It.IsAny<string>()))
+            .Throws(new Exception("ExceptionTest"));
 
         string testFilePath = "testFilePath";
         var fileService = new FileService(
@@ -72,12 +81,17 @@ public class FileService_Tests
             Email = "test@test.com", PhoneNumber = "12345",
             StreetAddress = "Main Street", PostalCode = 12345, City = "Test"
         };
+        
         List<Contact> testList = new();
         testList.Add(testContact);
         string testContent = JsonConvert.SerializeObject(testList);
         
-        _mockConverter.Setup(c => c.ConvertToList(testContent)).Returns(testList);
-        _mockFileSetupService.Setup(fss => fss.ReadAllText(testFile)).Returns(testContent);
+        _mockConverter
+            .Setup(c => c.ConvertToList(testContent))
+            .Returns(testList);
+        _mockFileSetupService
+            .Setup(fss => fss.ReadAllText(testFile))
+            .Returns(testContent);
 
         var fileService = new FileService(
             _mockConverter.Object,
@@ -99,8 +113,12 @@ public class FileService_Tests
         string testFile = "testFile";
         string invalidJsonFile = "invalidJsonFile"; 
         
-        _mockFileSetupService.Setup(fss => fss.ReadAllText(testFile)).Returns(invalidJsonFile);
-        _mockConverter.Setup(c => c.ConvertToList(invalidJsonFile)).Returns(new List<Contact>());
+        _mockFileSetupService
+            .Setup(fss => fss.ReadAllText(testFile))
+            .Returns(invalidJsonFile);
+        _mockConverter
+            .Setup(c => c.ConvertToList(invalidJsonFile))
+            .Returns(new List<Contact>());
         
         var fileService = new FileService(
             _mockConverter.Object, 

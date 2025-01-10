@@ -57,7 +57,7 @@ public partial class ListViewModel : ObservableObject
 
     private void LoadContacts()
     {
-        var contacts = _contactService.GetAll();
+        IEnumerable<Contact> contacts = _contactService.GetAll();
 
         foreach (Contact contact in contacts)
         {

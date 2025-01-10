@@ -10,7 +10,6 @@ public class ContactService : IContactService
     private readonly IFileService _fileService;
     private readonly List<Contact> _contacts;
 
-
     public ContactService(IFileService fileService)
     {
         _fileService = fileService;
@@ -21,10 +20,13 @@ public class ContactService : IContactService
     {
         try
         {
-            Contact contact = ContactFactory.Create(form);
-            _contacts.Add(contact);
-            _fileService.AddListToFile(_contacts);
-            return true;
+            if (_contacts != null!)
+            {
+                Contact contact = ContactFactory.Create(form);
+                _contacts.Add(contact);
+                return _fileService.AddListToFile(_contacts);
+            }
+            return false;
         }
         catch (Exception ex)
         {
@@ -36,7 +38,7 @@ public class ContactService : IContactService
 
     public Contact? GetContactById(string id)
     {
-        return _contacts.FirstOrDefault(x => x.Id == id);
+        return _contacts.FirstOrDefault(x => x.Id == id) ?? null;
     }
 
     public bool UpdateContact(string? id, ContactForm? form)
@@ -82,7 +84,6 @@ public class ContactService : IContactService
 
     public IEnumerable<Contact> GetAll()
     {
-        var newList = _fileService.LoadListFromFile();
-        return newList;
+        return _fileService.LoadListFromFile();
     }
 }

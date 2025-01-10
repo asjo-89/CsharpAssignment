@@ -33,9 +33,13 @@ public class FileService : IFileService
     {
         try
         {
-            var json = _jsonConverter.ConvertToJson(list);
-            _fileSetupService.WriteAllText(_filePath, json);
-            return true;
+            if (list != null!)
+            {
+                var json = _jsonConverter.ConvertToJson(list);
+                _fileSetupService.WriteAllText(_filePath, json);
+                return true;
+            }
+            return false;
         }
         catch (Exception ex)
         {
@@ -49,8 +53,11 @@ public class FileService : IFileService
         try
         {
             string json = _fileSetupService.ReadAllText(_filePath);
-            var contacts = _jsonConverter.ConvertToList(json);
-            return contacts;
+            List<Contact> contacts = _jsonConverter.ConvertToList(json);
+            
+            if(contacts != null!) return contacts;
+
+            return [];
         }
         catch (Exception ex)
         {
