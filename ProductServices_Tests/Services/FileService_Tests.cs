@@ -12,14 +12,14 @@ public class FileService_Tests
     private readonly Mock<IJsonConverter> _mockConverter = new();
 
     [Fact]
-    public void AddListFile_ShouldReturnTrue_WhenListIsAddedToFile()
+    public void AddListToFile_ShouldReturnTrue_WhenListIsAddedToFile()
     {
         // Arrange
         string testFilePath = "testFilePath";
         List<Contact> list = new List<Contact>();
         
         _mockConverter
-            .Setup(c => c.ConvertToJson(It.IsAny<List<Contact>>()))
+            .Setup(c => c.ConvertToJson(list))
             .Returns("[]");
         _mockFileSetupService
             .Setup(f => f.FileExists(testFilePath))
@@ -39,7 +39,7 @@ public class FileService_Tests
         Assert.True(result);
         _mockFileSetupService.Verify(fss => fss.WriteAllText(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
-
+    
     [Fact]
     public void AddListToFile_ShouldReturnFalse_WhenWriteAllTextThrowsException()
     {

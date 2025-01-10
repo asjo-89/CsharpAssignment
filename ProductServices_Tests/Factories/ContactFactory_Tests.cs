@@ -41,6 +41,4 @@ public class ContactFactory_Tests
         Assert.IsType<Contact>(result);
         Assert.Equal(contact.FirstName, result.FirstName);
     }
-    
-    //Test för att få Exception om Contact Create ej returnerar contact.
 }

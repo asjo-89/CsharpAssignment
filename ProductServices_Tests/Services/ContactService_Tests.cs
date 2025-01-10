@@ -7,19 +7,9 @@ namespace Business.Tests.Services;
 
 public class ContactService_Tests
 {
-    private readonly Mock<IFileService> _fileServiceMock;
+    private readonly Mock<IFileService> _fileServiceMock = new();
     
     private readonly ContactForm _contact1 = new()
-    {
-        FirstName = "Test1",
-        LastName = "Testsson1",
-        Email = "test1@domain.com",
-        PhoneNumber = "1111111111",
-        StreetAddress = "Testvägen 1",
-        PostalCode = 11111,
-        City = "Teststad"
-    };
-    private readonly ContactForm _contact2 = new()
     {
         FirstName = "Test2",
         LastName = "Testsson2",
@@ -29,43 +19,40 @@ public class ContactService_Tests
         PostalCode = 22222,
         City = "Teststad"
     };
-    private readonly ContactForm _updatedContact = new()
+    private readonly ContactForm _updatedContact1 = new()
+    {
+        FirstName = "Testing",
+        LastName = "Testing",
+        Email = "testing@domain.com",
+        PhoneNumber = "0",
+        StreetAddress = "Testvägen 1",
+        PostalCode = 11111,
+        City = "Teststad1"
+    };
+    private readonly ContactForm _updatedContact2 = new()
     {
         FirstName = "Testing",
         LastName = "Testing",
         Email = "",
-        PhoneNumber = "0",
+        PhoneNumber = "",
         StreetAddress = "Testvägen 2",
         PostalCode = 22222,
         City = "Teststad"
     };
-    private readonly Contact testContact1 = new()
+    private readonly Contact _testContact1 = new()
     {
         Id = "1",
         FirstName = "Test1", LastName = "Testsson1",
         Email = "test1@domain.com", PhoneNumber = "1111111111",
         StreetAddress = "Test", PostalCode = 11111, City = "Teststad"
     };
-    private readonly Contact testContact2 = new()
+    private readonly Contact _testContact2 = new()
     {
         Id = "2",
         FirstName = "Test2", LastName = "Testsson2",
         Email = "test2@domain.com", PhoneNumber = "2121212121",
         StreetAddress = "Test", PostalCode = 22222, City = "Teststad"
     };
-    public ContactService_Tests()
-    {
-        _fileServiceMock = new Mock<IFileService>();
-        
-        // _fileServiceMock = new Mock<IFileService>();
-        // _fileServiceMock.Setup(fs => fs.LoadListFromFile()).Returns([]);
-        // _fileServiceMock.Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>())).Returns(true);
-        // _contactService = new ContactService(_fileServiceMock.Object);
-
-        // _fileService2Mock = new Mock<IFileService>();
-        // _fileService2Mock.Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>())).Returns(false);
-        // _contactService2 = new ContactService(_fileService2Mock.Object);
-    }
 
     [Fact]
     public void AddContact_ShouldReturnTrue_WhenContactIsAddedSuccessfully()
@@ -108,13 +95,6 @@ public class ContactService_Tests
         _fileServiceMock.Verify(fs => fs.AddListToFile(testList), Times.Never);
     }
 
-    //Fixa
-    [Fact]
-    public void AddContact_ShouldAddContactDetailsToList()
-    {
-        
-    }
-
     [Fact]
     public void GetAll_ShouldReturnIEnumerableList()
     {
@@ -136,7 +116,7 @@ public class ContactService_Tests
     public void GetContactById_ShouldReturnSpecifiedContact_WhenIdMatchesIdInList()
     {
         // Arrange
-        List<Contact> testList = [testContact1, testContact2];
+        List<Contact> testList = [_testContact1, _testContact2];
         
         _fileServiceMock
             .Setup(fs => fs.LoadListFromFile())
@@ -144,20 +124,20 @@ public class ContactService_Tests
         var contactService = new ContactService(_fileServiceMock.Object);
         
         // Act
-        Contact? result = contactService.GetContactById(testContact2.Id);
+        Contact? result = contactService.GetContactById(_testContact2.Id);
 
         //Assert
         Assert.NotNull(result);
         Assert.IsType<Contact>(result);
-        Assert.Equal(result.Id, testContact2.Id);
-        Assert.Equal(result.FirstName, testContact2.FirstName);
+        Assert.Equal(result.Id, _testContact2.Id);
+        Assert.Equal(result.FirstName, _testContact2.FirstName);
     }
     
     [Fact]
-    public void UpdateContact_ShouldReturnTrue_WhenContactIsUpdatedInList_WithTheNewParameterData()
+    public void UpdateContact_ShouldReturnTrue_WhenContactIsUpdatedInList_EmptyInputsWillNotUpdate()
     {
         // Arrange
-        List<Contact> testList = [testContact1];
+        List<Contact> testList = [_testContact1];
         var id = testList[0].Id;
         
         _fileServiceMock
@@ -169,25 +149,60 @@ public class ContactService_Tests
         var contactService = new ContactService(_fileServiceMock.Object);
 
         // Act
-        bool result = contactService.UpdateContact(id, _updatedContact);
+        bool result = contactService.UpdateContact(id, _updatedContact1);
 
         //Assert
         Assert.True(result);
+        Assert.Single(testList);
+        Assert.Equal(testList[0].Id, _testContact1.Id);
+        Assert.Equal(_updatedContact1.FirstName, testList[0].FirstName);
+        Assert.Equal(_updatedContact1.LastName, testList[0].LastName);
+        Assert.Equal(_updatedContact1.Email, testList[0].Email);
+        Assert.Equal(_updatedContact1.PhoneNumber, testList[0].PhoneNumber);
+        Assert.Equal(_updatedContact1.StreetAddress, testList[0].StreetAddress);
+        Assert.Equal(_updatedContact1.PostalCode, testList[0].PostalCode);
+        Assert.Equal(_updatedContact1.City, testList[0].City);
         _fileServiceMock.Verify(fs => fs.AddListToFile(testList), Times.Once);
     }
 
-    //Fixa
     [Fact]
-    public void UpdateContact_ShouldAddNewContactDetailsToTheChosenContactInTheList()
+    public void UpdateContact_ShouldNotUpdateExistingDetails_WhenInputFieldIsEmpty()
     {
+        // Arrange
+        List<Contact> testList = [_testContact1];
+        var id = testList[0].Id;
         
+        _fileServiceMock
+            .Setup(fs => fs.LoadListFromFile())
+            .Returns(testList);
+        _fileServiceMock
+            .Setup(fs => fs.AddListToFile(testList))
+            .Returns(true);
+        var contactService = new ContactService(_fileServiceMock.Object);
+
+        
+        // Act
+        bool result = contactService.UpdateContact(id, _updatedContact2);
+        
+        // Assert
+        Assert.True(result);
+        Assert.Single(testList);
+        Assert.Equal(testList[0].Id, _testContact1.Id);
+        Assert.Equal(_updatedContact2.FirstName, testList[0].FirstName);
+        Assert.Equal(_updatedContact2.LastName, testList[0].LastName);
+        Assert.NotEqual(_updatedContact2.Email, testList[0].Email);
+        Assert.NotEqual(_updatedContact2.PhoneNumber, testList[0].PhoneNumber);
+        Assert.Equal(_updatedContact2.StreetAddress, testList[0].StreetAddress);
+        Assert.Equal(_updatedContact2.PostalCode, testList[0].PostalCode);
+        Assert.Equal(_updatedContact2.City, testList[0].City);
+        _fileServiceMock.Verify(fs => fs.AddListToFile(testList), Times.Once);
     }
     
     [Fact]
     public void DeleteContact_ShouldReturnTrue_WhenContactIsDeletedFromList()
     {
         // Arrange
-        List<Contact> testList = [testContact1];
+        List<Contact> testList = [_testContact1];
         var id = testList[0].Id;
         
         _fileServiceMock
@@ -204,13 +219,6 @@ public class ContactService_Tests
         //Assert
         Assert.True(result);
         _fileServiceMock.Verify(fs => fs.AddListToFile(testList), Times.Once);
-    }
-
-    // Fixa
-    [Fact]
-    public void DeleteContact_ShouldDeleteOnlyTheChosenContactFromTheList()
-    {
-        
     }
 }
     
