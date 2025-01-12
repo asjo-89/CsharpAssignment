@@ -52,7 +52,7 @@ public partial class UpdateContactViewModel(IServiceProvider serviceProvider, IC
     {
         Contact? contactToUpdate = contactService.GetContactById(id);
 
-        if (contactToUpdate != null)
+        if (contactToUpdate != null!)
         {
             Contact = new ContactForm
             {

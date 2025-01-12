@@ -5,7 +5,6 @@ using MainApp_WPF.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
-using Business.Helpers;
 
 namespace MainApp_WPF;
 public partial class App
@@ -17,14 +16,7 @@ public partial class App
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                //services.AddTransient<IJsonConverter, JsonListConverter>();
                 services.AddTransient<IFileService, FileService>();
-                //services.AddSingleton<IFileService1>(provider =>
-                //{
-                //    var jsonConverter = provider.GetRequiredService<IJsonConverter>();
-                //    var fileSetupService = provider.GetRequiredService<IFileSetupService>();
-                //    return new FileService1(jsonConverter, fileSetupService, null);
-                //});
                 services.AddTransient<IContactService, ContactService>();
 
                 services.AddSingleton<MainViewModel>();

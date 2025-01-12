@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Business.Factories;
+﻿using Business.Factories;
 using Business.Interfaces;
 using Business.Models;
 
@@ -53,7 +52,7 @@ public class ContactService(IFileService fileService) : IContactService
 
         Contact contact = GetContactById(id);
 
-        if (contact == null) return false;
+        if (contact == null!) return false;
 
         _list.Remove(contact);
         fileService.AddListToFile(_list);

@@ -8,16 +8,15 @@ namespace Business.Services;
 public class FileService : IFileService
 {
     private readonly string _filePath;
-    private readonly string _directoryPath;
 
     public FileService()
     {
-        _directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists");
-        _filePath = Path.Combine(_directoryPath, "ContactList.json");
+        string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists");
+        _filePath = Path.Combine(directoryPath, "ContactList.json");
 
-        if (!Directory.Exists(_directoryPath))
+        if (!Directory.Exists(directoryPath))
         {
-            Directory.CreateDirectory(_directoryPath);
+            Directory.CreateDirectory(directoryPath);
         }
 
         if (!File.Exists(_filePath))

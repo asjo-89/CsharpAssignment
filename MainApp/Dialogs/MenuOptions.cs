@@ -81,7 +81,7 @@ namespace MainApp_Console.Dialogs
                 {
                     Contact validId = contactService.GetContactById(list[index - 1].Id);
 
-                    if (validId == null)
+                    if (validId == null!)
                     {
                         Console.WriteLine("No contact with that id was found.");
                         Console.ReadKey();
@@ -183,7 +183,7 @@ namespace MainApp_Console.Dialogs
                 {
                     Contact validId = contactService.GetContactById(list[index - 1].Id);
 
-                    if (validId == null)
+                    if (validId == null!)
                     {
                         Console.WriteLine("No contact with that id was found.\n");
                         Console.ReadKey();
@@ -207,7 +207,7 @@ namespace MainApp_Console.Dialogs
             Console.Clear();
             List<Contact> list = contactService.GetContacts().ToList();
 
-            if (list.Count == 0 || list is null)
+            if (list.Count == 0 || list == null!)
             {
                 Console.WriteLine("There are no contacts in the list yet.");
                 Console.ReadKey();
