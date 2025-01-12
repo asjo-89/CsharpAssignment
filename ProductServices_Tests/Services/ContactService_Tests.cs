@@ -7,7 +7,7 @@ namespace Business.Tests.Services;
 
 public class ContactService_Tests
 {
-    private readonly Mock<IFileService> _fileServiceMock = new();
+    private readonly Mock<IFileService1> _fileServiceMock = new();
     
     private readonly ContactForm _contact1 = new()
     {
@@ -64,7 +64,7 @@ public class ContactService_Tests
         _fileServiceMock
             .Setup(fs => fs.AddListToFile(It.IsAny<List<Contact>>()))
             .Returns(true);
-        var contactService = new ContactService(_fileServiceMock.Object);
+        var contactService = new ContactService1(_fileServiceMock.Object);
         
         // Act
         var result = contactService.AddContact(_contact1);
@@ -85,7 +85,7 @@ public class ContactService_Tests
         _fileServiceMock
             .Setup(fs => fs.AddListToFile(testList))
             .Returns(false);
-        var contactService = new ContactService(_fileServiceMock.Object);
+        var contactService = new ContactService1(_fileServiceMock.Object);
         
         // Act
         var result = contactService.AddContact(_contact1);
@@ -102,7 +102,7 @@ public class ContactService_Tests
         _fileServiceMock
             .Setup(fs => fs.LoadListFromFile())
             .Returns([]);
-        var contactService = new ContactService(_fileServiceMock.Object);
+        var contactService = new ContactService1(_fileServiceMock.Object);
 
         // Act
         var result = contactService.GetAll().ToList();
@@ -121,7 +121,7 @@ public class ContactService_Tests
         _fileServiceMock
             .Setup(fs => fs.LoadListFromFile())
             .Returns(testList);
-        var contactService = new ContactService(_fileServiceMock.Object);
+        var contactService = new ContactService1(_fileServiceMock.Object);
         
         // Act
         Contact? result = contactService.GetContactById(_testContact2.Id);
@@ -146,7 +146,7 @@ public class ContactService_Tests
         _fileServiceMock
             .Setup(fs => fs.AddListToFile(testList))
             .Returns(true);
-        var contactService = new ContactService(_fileServiceMock.Object);
+        var contactService = new ContactService1(_fileServiceMock.Object);
 
         // Act
         bool result = contactService.UpdateContact(id, _updatedContact1);
@@ -178,7 +178,7 @@ public class ContactService_Tests
         _fileServiceMock
             .Setup(fs => fs.AddListToFile(testList))
             .Returns(true);
-        var contactService = new ContactService(_fileServiceMock.Object);
+        var contactService = new ContactService1(_fileServiceMock.Object);
 
         
         // Act
@@ -211,7 +211,7 @@ public class ContactService_Tests
         _fileServiceMock
             .Setup(fs => fs.AddListToFile(testList))
             .Returns(true);
-        var contactService = new ContactService(_fileServiceMock.Object);
+        var contactService = new ContactService1(_fileServiceMock.Object);
 
         // Act
         bool result = contactService.DeleteContact(id);

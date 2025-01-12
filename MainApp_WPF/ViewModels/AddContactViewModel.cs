@@ -19,7 +19,7 @@ public partial class AddContactViewModel(IServiceProvider serviceProvider, ICont
     [RelayCommand]
     private void SaveContact()
     {
-        if (contactService.AddContact(Contact))
+        if (contactService.AddToList(Contact))
         {
             var mainViewModel = serviceProvider.GetRequiredService<MainViewModel>();
             mainViewModel.CurrentViewModel = serviceProvider.GetRequiredService<ListViewModel>();

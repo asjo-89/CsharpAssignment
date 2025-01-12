@@ -49,15 +49,13 @@ public partial class ListViewModel : ObservableObject
             return;
         }
 
-        if (_contactService.DeleteContact(contact.Id))
-        {
-            Contacts.Remove(contact);
-        }
+        _contactService.DeleteContact(contact.Id);
+        Contacts.Remove(contact);
     }
 
     private void LoadContacts()
     {
-        IEnumerable<Contact> contacts = _contactService.GetAll();
+        IEnumerable<Contact> contacts = _contactService.GetContacts();
 
         foreach (Contact contact in contacts)
         {

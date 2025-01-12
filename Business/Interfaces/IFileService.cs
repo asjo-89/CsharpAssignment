@@ -5,5 +5,5 @@ namespace Business.Interfaces;
 public interface IFileService
 {
     bool AddListToFile(List<Contact> list);
-    List<Contact> LoadListFromFile();
+    List<Contact> ExtractListFromFile();
 }

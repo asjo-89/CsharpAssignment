@@ -17,14 +17,14 @@ public partial class App
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                services.AddTransient<IJsonConverter, JsonListConverter>();
-                services.AddTransient<IFileSetupService, FileSetupService>();
-                services.AddSingleton<IFileService>(provider =>
-                {
-                    var jsonConverter = provider.GetRequiredService<IJsonConverter>();
-                    var fileSetupService = provider.GetRequiredService<IFileSetupService>();
-                    return new FileService(jsonConverter, fileSetupService, null);
-                });
+                //services.AddTransient<IJsonConverter, JsonListConverter>();
+                services.AddTransient<IFileService, FileService>();
+                //services.AddSingleton<IFileService1>(provider =>
+                //{
+                //    var jsonConverter = provider.GetRequiredService<IJsonConverter>();
+                //    var fileSetupService = provider.GetRequiredService<IFileSetupService>();
+                //    return new FileService1(jsonConverter, fileSetupService, null);
+                //});
                 services.AddTransient<IContactService, ContactService>();
 
                 services.AddSingleton<MainViewModel>();

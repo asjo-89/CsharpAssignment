@@ -9,24 +9,25 @@ using Microsoft.Extensions.Hosting;
 var host = Host.CreateDefaultBuilder()
     .ConfigureServices(services =>
     {
-        services.AddTransient<IJsonConverter, JsonListConverter>();
+        // services.AddTransient<IJsonConverter, JsonListConverter>();
         services.AddSingleton<IContactService, ContactService>();
-        services.AddSingleton<ContactService>();
-        services.AddSingleton<IFileSetupService, FileSetupService>();
-        services.AddSingleton<IFileService>(provider =>
-        {
-            var jsonConverter = provider.GetRequiredService<IJsonConverter>();
-            var fileSetupService = provider.GetRequiredService<IFileSetupService>();
-            return new FileService(jsonConverter, fileSetupService, null);
-        });
+        // services.AddSingleton<ContactService>();
+        services.AddSingleton<IFileService, FileService>();
+        // services.AddSingleton<IFileSetupService, FileSetupService>();
+        // services.AddSingleton<IFileService>(provider =>
+        // {
+        //     var jsonConverter = provider.GetRequiredService<IJsonConverter>();
+        //     var fileSetupService = provider.GetRequiredService<IFileSetupService>();
+        //     return new FileService1(jsonConverter, fileSetupService, null);
+        // });
         services.AddSingleton<MainMenu>();
     })
-    .UseDefaultServiceProvider(options =>
-        options.ValidateScopes = true)
+    // .UseDefaultServiceProvider(options =>
+    //     options.ValidateScopes = true)
     .Build();
 
 var fileService = host.Services.GetRequiredService<IFileService>();
 var menu = host.Services.GetRequiredService<MainMenu>();
 
-fileService.LoadListFromFile();
+fileService.ExtractListFromFile();
 menu.Menu();

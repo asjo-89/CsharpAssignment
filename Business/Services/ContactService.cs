@@ -1,89 +1,73 @@
-﻿using Business.Factories;
+﻿using System.Diagnostics;
+using Business.Factories;
 using Business.Interfaces;
 using Business.Models;
-using System.Diagnostics;
 
 namespace Business.Services;
 
-public class ContactService : IContactService
+public class ContactService(IFileService fileService) : IContactService
 {
-    private readonly IFileService _fileService;
-    private readonly List<Contact> _contacts;
+    private readonly List<Contact> _list = fileService.ExtractListFromFile();
 
-    public ContactService(IFileService fileService)
+    public bool AddToList(ContactForm contactForm)
     {
-        _fileService = fileService;
-        _contacts = _fileService.LoadListFromFile();
-    }
-
-    public bool AddContact(ContactForm form)
-    {
-        try
+        if (_list != null!)
         {
-            if (_contacts != null!)
-            {
-                Contact contact = ContactFactory.Create(form);
-                _contacts.Add(contact);
-                return _fileService.AddListToFile(_contacts);
-            }
-            return false;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Failed to create user. Please try again.");
-            Debug.WriteLine(ex.Message);
-            return false;
-        }
-    }
-
-    public Contact? GetContactById(string id)
-    {
-        return _contacts.FirstOrDefault(x => x.Id == id) ?? null;
-    }
-
-    public bool UpdateContact(string? id, ContactForm? form)
-    {
-        if (id == null || form == null) return false;
-
-        foreach (Contact t in _contacts)
-        {
-            if (t.Id != id) continue;
-            
-            if (!string.IsNullOrWhiteSpace(form.FirstName)) t.FirstName = form.FirstName;
-
-            if (!string.IsNullOrWhiteSpace(form.LastName)) t.LastName = form.LastName;
-
-            if (!string.IsNullOrWhiteSpace(form.Email)) t.Email = form.Email;
-
-            int phone = form.PhoneNumber.Length;
-            if (phone > 0) t.PhoneNumber = form.PhoneNumber;
-
-            if (!string.IsNullOrWhiteSpace(form.StreetAddress)) t.StreetAddress = form.StreetAddress;
-
-            int postalCode = form.PostalCode.ToString()!.Length;
-            if (postalCode >= 5) t.PostalCode = form.PostalCode;
-
-            if (!string.IsNullOrWhiteSpace(form.City)) t.City = form.City;
-
-            _fileService.AddListToFile(_contacts);
+            Contact contact = ContactFactory.Create(contactForm);
+            _list.Add(contact);
+            fileService.AddListToFile(_list);
             return true;
         }
+
         return false;
+    }
+
+    public bool UpdateContact(string id, ContactForm contactForm)
+    {
+        if (id == null! || contactForm == null!) return false;
+
+        Contact contact = GetContactById(id);
+
+        if (!string.IsNullOrWhiteSpace(contactForm.FirstName)) contact.FirstName = contactForm.FirstName;
+        
+        if (!string.IsNullOrWhiteSpace(contactForm.LastName)) contact.LastName = contactForm.LastName;
+        
+        if (!string.IsNullOrWhiteSpace(contactForm.Email)) contact.Email = contactForm.Email;
+        
+        if (!string.IsNullOrWhiteSpace(contactForm.PhoneNumber)) contact.PhoneNumber = contactForm.PhoneNumber;
+        
+        if (!string.IsNullOrWhiteSpace(contactForm.StreetAddress)) contact.StreetAddress = contactForm.StreetAddress;
+        
+        if (contactForm.PostalCode >= 10000) contact.PostalCode = contactForm.PostalCode;
+        
+        if (!string.IsNullOrWhiteSpace(contactForm.City)) contact.City = contactForm.City;
+
+        fileService.AddListToFile(_list);
+        
+        return true;
     }
 
     public bool DeleteContact(string id)
     {
-        Contact? contact = _contacts.FirstOrDefault(x => x.Id == id);
+        if (id == null! || id == string.Empty) return false;
+
+        Contact contact = GetContactById(id);
 
         if (contact == null) return false;
 
-        _contacts.Remove(contact);
-        _fileService.AddListToFile(_contacts);
+        _list.Remove(contact);
+        fileService.AddListToFile(_list);
         return true;
     }
 
-    public IEnumerable<Contact> GetAll()
+    public Contact GetContactById(string id)
     {
-        return _fileService.LoadListFromFile();
+        return _list.FirstOrDefault(x => x.Id == id) ?? null!;
     }
+
+    public IEnumerable<Contact> GetContacts()
+    {
+        return fileService.ExtractListFromFile();
+    }
+    
 }

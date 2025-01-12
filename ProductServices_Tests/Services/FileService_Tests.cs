@@ -27,7 +27,7 @@ public class FileService_Tests
         _mockFileSetupService
             .Setup(f => f.WriteAllText(It.IsAny<string>(), It.IsAny<string>()));
 
-        var fileService = new FileService(
+        var fileService = new FileService1(
             _mockConverter.Object,
             _mockFileSetupService.Object,
             testFilePath);
@@ -55,7 +55,7 @@ public class FileService_Tests
             .Throws(new Exception("ExceptionTest"));
 
         string testFilePath = "testFilePath";
-        var fileService = new FileService(
+        var fileService = new FileService1(
             _mockConverter.Object,
             _mockFileSetupService.Object,
             testFilePath);
@@ -93,7 +93,7 @@ public class FileService_Tests
             .Setup(fss => fss.ReadAllText(testFile))
             .Returns(testContent);
 
-        var fileService = new FileService(
+        var fileService = new FileService1(
             _mockConverter.Object,
             _mockFileSetupService.Object,
             testFile);
@@ -120,7 +120,7 @@ public class FileService_Tests
             .Setup(c => c.ConvertToList(invalidJsonFile))
             .Returns(new List<Contact>());
         
-        var fileService = new FileService(
+        var fileService = new FileService1(
             _mockConverter.Object, 
             _mockFileSetupService.Object, 
             testFile

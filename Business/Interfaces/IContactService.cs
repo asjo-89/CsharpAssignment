@@ -4,9 +4,9 @@ namespace Business.Interfaces;
 
 public interface IContactService
 {
-    IEnumerable<Contact> GetAll();
-    Contact? GetContactById(string id);
-    bool UpdateContact(string id, ContactForm form);
+    bool AddToList(ContactForm contactForm);
+    bool UpdateContact(string id, ContactForm contactForm);
     bool DeleteContact(string id);
-    bool AddContact(ContactForm form);
+    Contact GetContactById(string id);
+    IEnumerable<Contact> GetContacts();
 }

@@ -1,44 +1,40 @@
-﻿using Business.Interfaces;
+﻿using System.Diagnostics;
+using System.Text.Json;
+using Business.Interfaces;
 using Business.Models;
-using System.Diagnostics;
 
 namespace Business.Services;
 
 public class FileService : IFileService
 {
-    private readonly string _filePath; 
-    private readonly IJsonConverter _jsonConverter;
-    private readonly IFileSetupService _fileSetupService;
-    
-    public FileService(IJsonConverter jsonConverter, IFileSetupService fileSetupService,  string? filePath)
+    private readonly string _filePath;
+    private readonly string _directoryPath;
+
+    public FileService()
     {
-        _jsonConverter = jsonConverter;
-        _fileSetupService = fileSetupService;
-        _filePath = filePath ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists", "ContactsList.json");
-        
-        var directoryPath = Path.GetDirectoryName(_filePath);
-        if (!string.IsNullOrWhiteSpace(directoryPath) && !_fileSetupService.DirectoryExists(directoryPath))
+        _directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Lists");
+        _filePath = Path.Combine(_directoryPath, "ContactList.json");
+
+        if (!Directory.Exists(_directoryPath))
         {
-            _fileSetupService.CreateDirectory(directoryPath);
+            Directory.CreateDirectory(_directoryPath);
         }
-        
-        if (!_fileSetupService.FileExists(_filePath))
+
+        if (!File.Exists(_filePath))
         {
-            _fileSetupService.WriteAllText(_filePath, "[]");
+            File.WriteAllText(_filePath, "[]");
         }
     }
-
+    
     public bool AddListToFile(List<Contact> list)
     {
         try
         {
-            if (list != null!)
-            {
-                var json = _jsonConverter.ConvertToJson(list);
-                _fileSetupService.WriteAllText(_filePath, json);
-                return true;
-            }
-            return false;
+            JsonSerializerOptions options = new() { WriteIndented = true };
+
+            string json = JsonSerializer.Serialize(list, options);
+            File.WriteAllText(_filePath, json);
+            return true;
         }
         catch (Exception ex)
         {
@@ -47,22 +43,21 @@ public class FileService : IFileService
         }
     }
 
-    public List<Contact> LoadListFromFile()
+    public List<Contact> ExtractListFromFile()
     {
         try
         {
-            string json = _fileSetupService.ReadAllText(_filePath);
-            List<Contact> contacts = _jsonConverter.ConvertToList(json);
-            
-            if(contacts != null!) return contacts;
+            string json = File.ReadAllText(_filePath);
+            List<Contact>? contacts = JsonSerializer.Deserialize<List<Contact>>(json);
 
-            return [];
+            if (contacts is null) return [];
+
+            return contacts;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex.Message); 
-            return [];
+            Debug.WriteLine(ex.Message);
+            return null!;
         }
     }
 }
- 
