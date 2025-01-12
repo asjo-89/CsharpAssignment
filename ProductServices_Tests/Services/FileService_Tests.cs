@@ -19,9 +19,7 @@ public class FileService_Tests
         // Assert
         Assert.True(result);
 
-        string directoryPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "TestDirectory");
+        string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TestDirectory");
         string filePath = Path.Combine(directoryPath, "TestFile.json");
 
         Assert.True(File.Exists(filePath));
@@ -69,5 +67,11 @@ public class FileService_Tests
         Assert.Equal(testContact.StreetAddress, result[0].StreetAddress);
         Assert.Equal(testContact.PostalCode, result[0].PostalCode);
         Assert.Equal(testContact.City, result[0].City);
+
+        ////Clean
+        string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TestDirectory");
+        string filePath = Path.Combine(directoryPath, "TestFile.json");
+        File.Delete(filePath);
+        Directory.Delete(directoryPath);
     }
 }
