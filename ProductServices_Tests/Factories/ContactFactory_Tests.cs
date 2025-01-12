@@ -31,7 +31,7 @@ public class ContactFactory_Tests
         };
 
         // Act
-        var result = ContactFactory.Create(contactForm);
+        Contact result = ContactFactory.Create(contactForm);
 
         // Assert
         
