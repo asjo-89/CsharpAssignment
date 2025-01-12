@@ -197,6 +197,29 @@ public class ContactService_Tests
         Assert.Equal(_updatedContact2.City, testList[0].City);
         _fileServiceMock.Verify(fs => fs.AddListToFile(testList), Times.Once);
     }
+
+    [Fact]
+    public void UpdateContact_ShouldReturnFalse_WhenIdIsNull()
+    {
+        // Arrange
+        List<Contact> testList = [_testContact1];
+        string id = null!;
+
+        _fileServiceMock
+            .Setup(fs => fs.ExtractListFromFile())
+            .Returns(testList);
+        _fileServiceMock
+            .Setup(fs => fs.AddListToFile(testList))
+            .Returns(true);
+
+        ContactService contactService = new ContactService(_fileServiceMock.Object);
+
+        // Act
+        bool result = contactService.UpdateContact(id, _updatedContact2);
+
+        // Assert
+        Assert.False(result);
+    }
     
     [Fact]
     public void DeleteContact_ShouldReturnTrue_WhenContactIsDeletedFromList()
@@ -219,6 +242,29 @@ public class ContactService_Tests
         //Assert
         Assert.True(result);
         _fileServiceMock.Verify(fs => fs.AddListToFile(testList), Times.Once);
+    }
+
+    [Fact]
+    public void DeleteContact_ShouldReturnFalse_WhenIdIsNull()
+    {
+        // Arrange
+        List<Contact> testList = [_testContact1];
+        string id = null!;
+
+        _fileServiceMock
+            .Setup(fs => fs.ExtractListFromFile())
+            .Returns(testList);
+        _fileServiceMock
+            .Setup(fs => fs.AddListToFile(testList))
+            .Returns(true);
+
+        ContactService contactService = new ContactService(_fileServiceMock.Object);
+
+        // Act
+        bool result = contactService.DeleteContact(id);
+
+        // Assert
+        Assert.False(result);
     }
 }
     

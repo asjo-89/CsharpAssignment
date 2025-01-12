@@ -24,13 +24,13 @@ public class FileService_Tests
 
         Assert.True(File.Exists(filePath));
 
-        ////Clean
+        //Clean
         File.Delete(filePath);
         Directory.Delete(directoryPath);
     }
 
     [Fact]
-    public void LoadListFromFile_ShouldReturnListWithContentFromJsonFile_WhenListIsLoadedFromFile()
+    public void ExtractListFromFile_ShouldReturnListWithContentFromJsonFile_WhenListIsLoadedFromFile()
     {
         // Arrange
         var fileService = new FileService("TestFile.json", "TestDirectory");
@@ -68,9 +68,30 @@ public class FileService_Tests
         Assert.Equal(testContact.PostalCode, result[0].PostalCode);
         Assert.Equal(testContact.City, result[0].City);
 
-        ////Clean
+        //Clean
         string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TestDirectory");
         string filePath = Path.Combine(directoryPath, "TestFile.json");
+        File.Delete(filePath);
+        Directory.Delete(directoryPath);
+    }
+
+    [Fact]
+    public void ExtractListFromFile_ShouldReturnEmptyList_WhenJsonIsInvalid()
+    {
+        // Arrange
+        var fileService = new FileService("TestFile.json", "TestDirectory");
+        string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TestDirectory");
+        string filePath = Path.Combine(directoryPath, "TestFile.json");
+
+        File.WriteAllText(filePath, "Invalid JSON");
+        
+        // Act
+        var result = fileService.ExtractListFromFile();
+
+        // Assert
+        Assert.Empty(result);
+
+        ////Clean
         File.Delete(filePath);
         Directory.Delete(directoryPath);
     }

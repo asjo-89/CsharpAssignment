@@ -61,7 +61,7 @@ public class FileService : IFileService
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
-            return null!;
+            return [];
         }
     }
 }

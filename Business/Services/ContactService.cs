@@ -50,7 +50,7 @@ public class ContactService(IFileService fileService) : IContactService
     {
         if (id == null! || id == string.Empty) return false;
 
-        Contact contact = GetContactById(id);
+        Contact contact = _list.FirstOrDefault(x => x.Id == id) ?? null!;
 
         if (contact == null!) return false;
 
@@ -61,7 +61,8 @@ public class ContactService(IFileService fileService) : IContactService
 
     public Contact GetContactById(string id)
     {
-        return _list.FirstOrDefault(x => x.Id == id) ?? null!;
+        Contact contact = _list.FirstOrDefault(x => x.Id == id) ?? null!;
+        return contact;
     }
 
     public IEnumerable<Contact> GetContacts()

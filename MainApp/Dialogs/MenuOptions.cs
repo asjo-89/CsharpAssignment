@@ -181,19 +181,28 @@ namespace MainApp_Console.Dialogs
                 bool parsed = int.TryParse(input, out int index);
                 if (parsed && index <= list.Count && index >= 1)
                 {
-                    Contact validId = contactService.GetContactById(list[index - 1].Id);
+                    Contact validContact = contactService.GetContactById(list[index - 1].Id);
 
-                    if (validId == null!)
+                    if (validContact == null!)
                     {
                         Console.WriteLine("No contact with that id was found.\n");
                         Console.ReadKey();
                         return;
                     }
 
-                    contactService.DeleteContact(input);
-                    Console.WriteLine("The contact was successfully deleted.");
-                    Console.ReadKey();
-                    valid = false;
+                    if (contactService.DeleteContact(validContact.Id))
+                    {
+                        Console.WriteLine("The contact was successfully deleted.");
+                        Console.ReadKey();
+                        valid = false;
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Something went wrong. The contact was not deleted.");
+                        Console.ReadKey();
+                        return;
+                    }
                 }
                 else
                 {
